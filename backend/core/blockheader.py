@@ -10,6 +10,7 @@ class BlockHeader:
         self.blockHash = ""
 
     def mine(self):
-        while(self.blockHash[0:4]) != '0000':
+        while(self.blockHash[0:5]) != '00000':
             self.blockHash = hash256((str(self.version) + str(self.prevBlockHash) + str(self.merkleRoot) + str(self.timestamp) + str(self.bits) + str(self.nonce)).encode()).hex()
             self.nonce += 1
+            print(f"Mining Started {self.nonce}", end='\r')
