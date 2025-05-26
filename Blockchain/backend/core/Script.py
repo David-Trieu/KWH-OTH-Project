@@ -5,6 +5,6 @@ class Script:
         else:
             self.cmds = cmds
 
-@classmethod
-def p2pkh_script(cls, h160):
-    return Script([0x76, 0xa9, h160, 0x88, 0xac])
+    @classmethod
+    def p2pkh_script(cls, h160):
+        return Script([0x76, 0xa9, h160, 0x88, 0xac])

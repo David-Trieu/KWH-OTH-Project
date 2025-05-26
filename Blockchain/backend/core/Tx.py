@@ -1,33 +1,31 @@
-from sympy import false
-
 from Blockchain.backend.core.Script import Script
 from Blockchain.backend.util.util import int_to_little_endian, bytes_needed, decode_base58, little_endian_to_int
 
 ZERO_HASH = b'\0' * 32
 REWARD = 1
 
-PRIVATE_KEY = 'bananansdadsad'
-MINER_ADDRESS = 'bananana2'
+PRIVATE_KEY = '40130474439181771711690280932034832030799782940534794097352823852457815440129'
+MINER_ADDRESS = '1XVBtz2yCUqK6igAna2pLficzgDEYBDCm'
 
 class CoinbaseTx:
     def __init__(self, BlockHeight):
         self.BlockHeightInLittleEndian = int_to_little_endian(BlockHeight, bytes_needed(BlockHeight))
 
-        def CoinbaseTransaction(self):
-            prev_tx = ZERO_HASH
-            prev_index = 0xffffffff
+    def CoinbaseTransaction(self):
+        prev_tx = ZERO_HASH
+        prev_index = 0xffffffff
 
-            tx_ins = []
-            tx_ins.append(TxIn(prev_tx, prev_index))
-            tx_ins[0].script_sig.cmds.append(self.BlockHeightInLittleEndian)
+        tx_ins = []
+        tx_ins.append(TxIn(prev_tx, prev_index))
+        tx_ins[0].script_sig.cmds.append(self.BlockHeightInLittleEndian)
 
-            tx_outs = []
-            target_amount = REWARD * 1000
-            target_h160 = decode_base58(MINER_ADDRESS)
-            target_script = Script.p2pkh_script(target_h160)
-            tx_outs.append(TxOut(target_amount, target_script))
+        tx_outs = []
+        target_amount = REWARD * 1000
+        target_h160 = decode_base58(MINER_ADDRESS)
+        target_script = Script.p2pkh_script(target_h160)
+        tx_outs.append(TxOut(target_amount, target_script))
 
-            return Tx(1, tx_ins, tx_outs, 0)
+        return Tx(1, tx_ins, tx_outs, 0)
 
 class Tx:
     def __init__(self, version, tx_ins, tx_outs, locktime):
@@ -54,7 +52,7 @@ class Tx:
 
         if self.is_coinbase():
             self.tx_ins[0].prev_tx = self.tx_ins[0].prev_tx.hex()
-            self.tx_ins[0].script_sig.cmds[0] = little_endian_to_int(self.tx_ins[0].script_sig.cmd[0])
+            self.tx_ins[0].script_sig.cmds[0] = little_endian_to_int(self.tx_ins[0].script_sig.cmds[0])
             self.tx_ins[0].script_sig = self.tx_ins[0].script_sig.__dict__
 
         self.tx_ins[0] = self.tx_ins[0].__dict__
