@@ -9,11 +9,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Visualization & Content Choices:
         - Hero: Goal: Attract & Inform. Method: Large headline, brief intro, CTA. Interaction: Button click. Justification: Standard effective landing page practice.
-        - About KWH-Coin: Goal: Explain Core Concept. Method: Text blocks. Interaction: None. Justification: Foundational information.
-        - Tokenomics: Goal: Illustrate Distribution. Method: Chart.js Donut Chart. Interaction: Hover for tooltips. Justification: Visual representation is clearer for distribution data. Library: Chart.js.
-        - Features: Goal: Showcase Benefits. Method: Icon + Text lists. Interaction: None. Justification: Easy to scan key points.
-        - Security: Goal: Build Trust. Method: Text blocks. Interaction: None. Justification: Critical information, direct presentation.
-        - Roadmap: Goal: Show Future Plans. Method: Styled HTML list (timeline-like). Interaction: None. Justification: Clear, chronological display.
+        - Einleitung: Goal: Explain Core Problem & Solution. Method: Text blocks. Interaction: None. Justification: Foundational information from whitepaper's intro.
+        - KWH-Coin Ökosystem: Goal: Detail project structure & roles. Method: Text blocks with sub-sections for Stakeholders, Tokenomics & Generation, Platform. Interaction: None. Justification: Comprehensive overview of the system.
+        - Technische Konzeption: Goal: Detail underlying technology. Method: Text blocks with sub-sections for Blockchain Architecture, Programming. Interaction: None. Justification: Essential for technical understanding.
+        - Vorteile & Anwendungsfälle: Goal: Highlight benefits and practical uses. Method: Text lists. Interaction: None. Justification: Showcases value proposition.
+        - Tokenomics: Goal: Illustrate Distribution (conceptual). Method: Chart.js Donut Chart. Interaction: Hover for tooltips. Justification: Visual representation is clearer for distribution data. Library: Chart.js.
+        - Roadmap: Goal: Show Future Plans. Method: Styled HTML list (timeline-like) with updated phases. Interaction: None. Justification: Clear, chronological display of project progress.
+        - Team: Goal: Introduce core members. Method: Placeholder for future team details. Interaction: None. Justification: Builds trust and credibility.
         - FAQ: Goal: Address Common Queries. Method: Expandable items (JS toggle). Interaction: Click to expand/collapse. Justification: Saves space, user-controlled detail.
         - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used.
     -->
@@ -25,6 +27,8 @@
         }
         .hero-gradient {
             background: linear-gradient(135deg, #096f84 0%, #075f72 100%); /* Teal Accent Gradient */
+            background-size: 200% 200%; /* For gradient animation */
+            animation: gradientAnimation 10s ease infinite alternate; /* Apply gradient animation */
         }
         .section-title {
             font-size: 2.25rem; /* 36px */
@@ -41,25 +45,32 @@
         .cta-button {
             background-color: #096f84; /* Teal Accent */
             color: white;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, transform 0.2s ease; /* Add transform for scale */
         }
         .cta-button:hover {
             background-color: #075f72; /* Darker Teal */
+            transform: scale(1.05); /* Slightly scale up on hover */
         }
         .secondary-cta-button {
             border-color: #096f84; /* Teal Accent */
             color: #096f84; /* Teal Accent */
-            transition: background-color 0.3s ease, color 0.3s ease;
+            transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease; /* Add transform for scale */
         }
         .secondary-cta-button:hover {
             background-color: #096f84; /* Teal Accent */
             color: white;
+            transform: scale(1.05); /* Slightly scale up on hover */
         }
         .card {
             background-color: white;
             border-radius: 0.75rem; /* 12px */
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             padding: 1.5rem; /* 24px */
+            transition: all 0.3s ease; /* For hover effects */
+        }
+        .card:hover {
+            transform: translateY(-5px) scale(1.01); /* Lift and slightly scale up */
+            box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.15), 0 5px 10px -5px rgba(0, 0, 0, 0.08); /* Stronger shadow */
         }
         .faq-item summary {
             cursor: pointer;
@@ -109,6 +120,104 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #075f72; /* Darker Teal */
         }
+
+        /* Animations */
+        @keyframes gradientAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes popIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            70% {
+                opacity: 1;
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .animate-hero-text {
+            animation: fadeInUp 0.8s ease-out forwards;
+            opacity: 0; /* Start hidden */
+        }
+
+        .animate-hero-buttons {
+            animation: fadeInUp 0.8s ease-out forwards;
+            animation-delay: 0.3s; /* Delay for buttons */
+            opacity: 0; /* Start hidden */
+        }
+
+        .animate-on-scroll {
+            opacity: 0;
+            transition: opacity 0.8s ease-out; /* Only opacity transition by default */
+        }
+
+        .animate-on-scroll.slide-in-left {
+            transform: translateX(-50px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out; /* Add transform transition for sliding elements */
+        }
+
+        .animate-on-scroll.slide-in-right {
+            transform: translateX(50px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out; /* Add transform transition for sliding elements */
+        }
+
+        .animate-on-scroll.pop-in {
+            transform: scale(0.8); /* Start smaller */
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        .animate-on-scroll.is-visible {
+            opacity: 1;
+            transform: translateX(0) scale(1);
+        }
+
+        /* Specific delays for staggered animations */
+        .animate-delay-100 { animation-delay: 0.1s; }
+        .animate-delay-200 { animation-delay: 0.2s; }
+        .animate-delay-300 { animation-delay: 0.3s; }
+        .animate-delay-400 { animation-delay: 0.4s; }
+        .animate-delay-500 { animation-delay: 0.5s; }
+        .animate-delay-600 { animation-delay: 0.6s; }
     </style>
 </head>
 <body class="antialiased">
@@ -120,11 +229,13 @@
                     <a href="#" class="text-2xl font-bold text-[#096f84]">KWH<span class="text-[#212529]">Coin</span></a>
                 </div>
                 <nav class="hidden md:flex space-x-6">
-                    <a href="#ueber" class="nav-link text-gray-700 hover:text-[#096f84] font-medium">Über KWH</a>
+                    <a href="#einleitung" class="nav-link text-gray-700 hover:text-[#096f84] font-medium">Einleitung</a>
+                    <a href="#oekosystem" class="nav-link text-gray-700 hover:text-[#096f84] font-medium">Ökosystem</a>
+                    <a href="#technik" class="nav-link text-gray-700 hover:text-[#096f84] font-medium">Technik</a>
+                    <a href="#vorteile" class="nav-link text-gray-700 hover:text-[#096f84] font-medium">Vorteile</a>
                     <a href="#tokenomics" class="nav-link text-gray-700 hover:text-[#096f84] font-medium">Tokenomics</a>
-                    <a href="#funktionen" class="nav-link text-gray-700 hover:text-[#096f84] font-medium">Funktionen</a>
-                    <a href="#sicherheit" class="nav-link text-gray-700 hover:text-[#096f84] font-medium">Sicherheit</a>
                     <a href="#roadmap" class="nav-link text-gray-700 hover:text-[#096f84] font-medium">Roadmap</a>
+                    <a href="#team" class="nav-link text-gray-700 hover:text-[#096f84] font-medium">Team</a>
                     <a href="#faq" class="nav-link text-gray-700 hover:text-[#096f84] font-medium">FAQ</a>
                 </nav>
                 <div class="md:hidden">
@@ -135,11 +246,13 @@
             </div>
         </div>
         <div id="mobile-menu" class="md:hidden hidden bg-white shadow-lg py-2">
-            <a href="#ueber" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-[#096f84]">Über KWH</a>
+            <a href="#einleitung" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-[#096f84]">Einleitung</a>
+            <a href="#oekosystem" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-[#096f84]">Ökosystem</a>
+            <a href="#technik" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-[#096f84]">Technik</a>
+            <a href="#vorteile" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-[#096f84]">Vorteile</a>
             <a href="#tokenomics" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-[#096f84]">Tokenomics</a>
-            <a href="#funktionen" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-[#096f84]">Funktionen</a>
-            <a href="#sicherheit" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-[#096f84]">Sicherheit</a>
             <a href="#roadmap" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-[#096f84]">Roadmap</a>
+            <a href="#team" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-[#096f84]">Team</a>
             <a href="#faq" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-[#096f84]">FAQ</a>
         </div>
     </header>
@@ -147,38 +260,168 @@
     <main class="pt-16">
         <section id="hero" class="hero-gradient text-white py-20 md:py-32">
             <div class="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-                <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 leading-tight">
+                <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold mb-6 leading-tight animate-hero-text">
                     KWH-Coin: Revolutioniert den Energiemarkt.
                 </h1>
-                <p class="text-lg sm:text-xl md:text-2xl mb-10 max-w-3xl mx-auto text-gray-200">
+                <p class="text-lg sm:text-xl md:text-2xl mb-10 max-w-3xl mx-auto text-gray-200 animate-hero-text">
                     Entdecken Sie eine dezentralisierte Zukunft für Energiehandel und -management, basierend auf Transparenz und Effizienz.
                 </p>
-                <div>
-                    <a href="#ueber" class="cta-button text-lg font-semibold py-3 px-8 rounded-lg shadow-md inline-block mr-4 mb-4 sm:mb-0">Mehr erfahren</a>
+                <div class="animate-hero-buttons">
+                    <a href="#einleitung" class="cta-button text-lg font-semibold py-3 px-8 rounded-lg shadow-md inline-block mr-4 mb-4 sm:mb-0">Mehr erfahren</a>
                     <a href="#kaufen" class="secondary-cta-button bg-white text-lg font-semibold py-3 px-8 rounded-lg shadow-md inline-block border-2 border-white hover:bg-transparent hover:text-white">KWH Kaufen (Anleitung)</a>
                 </div>
             </div>
         </section>
 
-        <section id="ueber" class="py-16 md:py-24 bg-white">
+        <section id="einleitung" class="py-16 md:py-24 bg-white">
             <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-                <h2 class="section-title text-center">Über KWH-Coin</h2>
+                <h2 class="section-title text-center">Einleitung: Die Herausforderung der Energiewende</h2>
                 <p class="text-lg text-gray-700 mb-8 max-w-3xl mx-auto text-center">
-                    Dieser Abschnitt stellt KWH-Coin vor und erläutert seine Vision, die zugrundeliegende Technologie und wie es darauf abzielt, die Herausforderungen im aktuellen Energiemarkt zu lösen. KWH-Coin strebt danach, eine transparente, effiziente und benutzergesteuerte Plattform für den Energieaustausch zu schaffen.
+                    Dieser Abschnitt führt in die globale Energiewende ein und beleuchtet die zentralen Herausforderungen, die sich aus dem Ausbau erneuerbarer Energiequellen ergeben, insbesondere im Umgang mit volatiler Erzeugung und Energieüberschüssen.
                 </p>
-                <div class="grid md:grid-cols-2 gap-8 items-center">
-                    <div>
-                        <h3 class="text-2xl font-semibold text-gray-800 mb-3">Unsere Vision</h3>
-                        <p class="text-gray-600 mb-4">
-                            KWH-Coin wurde entwickelt, um den traditionellen Energiemarkt durch die Einführung von Blockchain-Technologie zu demokratisieren. Wir stellen uns eine Zukunft vor, in der jeder – von Einzelpersonen bis zu Großverbrauchern – Energie transparent und effizient handeln kann, Peer-to-Peer-Transaktionen fördert und die Abhängigkeit von zentralisierten Vermittlern reduziert.
-                        </p>
-                        <h3 class="text-2xl font-semibold text-gray-800 mb-3">Das Problem & Unsere Lösung</h3>
+                <div class="grid md:grid-cols-2 gap-8 items-start">
+                    <div class="animate-on-scroll slide-in-left">
+                        <h3 class="text-2xl font-semibold text-gray-800 mb-3">Aktuelle Problematik</h3>
+                        <ul class="list-disc list-inside text-gray-600 mb-4 space-y-2">
+                            <li><strong>Negative Strompreise:</strong> Bei hohem Angebot und geringer Nachfrage können Strompreise negativ werden, was bedeutet, dass Erzeuger dafür zahlen müssen, ihren Strom ins Netz einzuspeisen.</li>
+                            <li><strong>Abregelung von Anlagen:</strong> Um das Netz nicht zu überlasten, werden regenerative Erzeugungsanlagen oft abgeregelt, wodurch wertvolle grüne Energie ungenutzt bleibt.</li>
+                            <li><strong>Ineffiziente Nutzung von Überschussenergie:</strong> Es fehlen flexible und rentable Mechanismen, um Überschussenergie effektiv zu nutzen oder zu speichern.</li>
+                        </ul>
                         <p class="text-gray-600">
-                            Der derzeitige Energiemarkt leidet unter mangelnder Transparenz, Ineffizienzen und hohen Transaktionskosten. KWH-Coin adressiert diese Probleme durch eine dezentrale Plattform, die sichere, nachvollziehbare und kostengünstige Energietransaktionen ermöglicht. Smart Contracts automatisieren Prozesse und gewährleisten Fairness und Zuverlässigkeit.
+                            Diese Ineffizienzen hemmen nicht nur den wirtschaftlichen Betrieb erneuerbarer Anlagen, sondern auch die Geschwindigkeit der Energiewende selbst. Es bedarf innovativer Lösungen, um diese Herausforderungen zu meistern.
                         </p>
                     </div>
-                    <div class="rounded-lg overflow-hidden shadow-xl">
-                         <img src="https://placehold.co/600x400/096f84/FFFFFF?text=KWH-Coin+Vision" alt="KWH-Coin Vision Illustration" class="w-full h-auto object-cover" onerror="this.src='https://placehold.co/600x400/E0E0E0/B0B0B0?text=Bild+Ladefehler'; this.alt='Platzhalterbild für KWH-Coin Vision'">
+                    <div class="rounded-lg overflow-hidden shadow-xl animate-on-scroll slide-in-right">
+                         <img src="https://placehold.co/600x400/096f84/FFFFFF?text=Herausforderung+Energiewende" alt="[Image of Energy Transition Challenge]" class="w-full h-auto object-cover" onerror="this.src='https://placehold.co/600x400/E0E0E0/B0B0B0?text=Bild+Ladefehler'; this.alt='Platzhalterbild für Herausforderung Energiewende'">
+                    </div>
+                </div>
+                <div class="mt-12 text-center animate-on-scroll pop-in">
+                    <h3 class="text-2xl font-semibold text-gray-800 mb-3">Die Lösung: Der KWH-Coin</h3>
+                    <p class="text-lg text-gray-700 mb-6 max-w-3xl mx-auto">
+                        Wir präsentieren den KWH-Coin, einen Kryptocoin, der speziell für den Handel mit elektrischer Energie entwickelt wurde. Das Kernkonzept des KWH-Coin ist es, überschüssige elektrische Energie direkt in einen handelbaren digitalen Wert umzuwandeln.
+                    </p>
+                    <ul class="list-disc list-inside text-gray-600 text-left mx-auto max-w-2xl space-y-2">
+                        <li><strong>Energiebasierte Erzeugung (Mining):</strong> Jeder KWH-Coin wird durch den Einsatz von ca. einer Kilowattstunde (kWh) elektrischer Energie erzeugt ("gemined"). Die Erzeugungskosten (Energieaufwand) sollen tendenziell leicht über dem nominellen Wert eines Coins liegen, um den Handel und die Nutzung zu incentivieren, anstatt reiner Spekulation.</li>
+                        <li><strong>Dezentraler Handel:</strong> KWH-Coins können auf einer dedizierten Plattform peer-to-peer (P2P) zwischen Erzeugern, Verbrauchern und Speicherbetreibern gehandelt werden.</li>
+                        <li><strong>Transparenz und Sicherheit:</strong> Durch den Einsatz der Blockchain-Technologie werden alle Transaktionen transparent, nachvollziehbar und fälschungssicher dokumentiert.</li>
+                        <li><strong>Problemlösung für Überschussenergie:</strong> Erzeuger können überschüssige Energie, die sonst abgeregelt würde oder zu negativen Preisen führen könnte, in KWH-Coins umwandeln und diese zu einem späteren Zeitpunkt oder an andere Akteure verkaufen.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <section id="oekosystem" class="py-16 md:py-24 bg-gray-50">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="section-title text-center">Das KWH-Coin Ökosystem</h2>
+                <p class="text-lg text-gray-700 mb-12 max-w-3xl mx-auto text-center">
+                    Das KWH-Coin Ökosystem ist ein komplexes Zusammenspiel verschiedener Akteure und Technologien, die darauf abzielen, den Energiehandel zu dezentralisieren und zu optimieren. Dieser Abschnitt detailliert die Rollen der Stakeholder, die Tokenomics und den Erzeugungsmechanismus des KWH-Coins sowie die Architektur der Handelsplattform.
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-12 items-start mb-12">
+                    <div class="animate-on-scroll slide-in-left">
+                        <h3 class="text-2xl font-semibold text-gray-800 mb-4">Stakeholder und ihre Rollen</h3>
+                        <div class="space-y-6">
+                            <div class="card">
+                                <h4 class="text-xl font-semibold text-[#096f84] mb-2">Erzeuger (Miner)</h4>
+                                <p class="text-gray-600">Betreiber von erneuerbaren Energieanlagen (PV-Anlagen, Windkraftanlagen, etc.), die ihren überschüssigen Strom nutzen, um KWH-Coins zu minen und auf der Plattform zu verkaufen.</p>
+                            </div>
+                            <div class="card">
+                                <h4 class="text-xl font-semibold text-[#096f84] mb-2">Verbraucher</h4>
+                                <p class="text-gray-600">Private Haushalte, Unternehmen oder Elektrofahrzeugbesitzer, die KWH-Coins kaufen, um ihren Energiebedarf zu decken oder als handelbares Asset zu nutzen.</p>
+                            </div>
+                            <div class="card">
+                                <h4 class="text-xl font-semibold text-[#096f84] mb-2">Verteiler (Netzbetreiber)</h4>
+                                <p class="text-gray-600">Könnten in Zukunft eine Rolle bei der Validierung von Einspeisungen oder der Bereitstellung von Netzdienstleistungen spielen, die über KWH-Coin-Mechanismen vergütet werden.</p>
+                            </div>
+                            <div class="card">
+                                <h4 class="text-xl font-semibold text-[#096f84] mb-2">Speicherbetreiber</h4>
+                                <p class="text-gray-600">Betreiber von Batteriespeichern oder anderen Speichertechnologien, die KWH-Coins zu Niedrigpreiszeiten kaufen, Energie speichern und zu Hochpreiszeiten verkaufen können.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="animate-on-scroll slide-in-right">
+                        <h3 class="text-2xl font-semibold text-gray-800 mb-4">Die Plattform: Wallet und Handel</h3>
+                        <div class="space-y-6">
+                            <div class="card">
+                                <h4 class="text-xl font-semibold text-[#096f84] mb-2">KWH-Coin Wallet</h4>
+                                <p class="text-gray-600">Eine sichere, benutzerfreundliche digitale Geldbörse (Desktop, Mobile) zur Aufbewahrung, zum Senden und Empfangen von KWH-Coins.</p>
+                            </div>
+                            <div class="card">
+                                <h4 class="text-xl font-semibold text-[#096f84] mb-2">Handelsplattform (Website/App)</h4>
+                                <p class="text-gray-600">Eine intuitive Plattform, die es Nutzern ermöglicht, KWH-Coins zu kaufen und zu verkaufen, Marktdaten und Preischarts einzusehen und perspektivisch Verträge zur Energielieferung abzuschließen.</p>
+                            </div>
+                            <div class="card">
+                                <h4 class="text-xl font-semibold text-[#096f84] mb-2">Informative Webseite</h4>
+                                <p class="text-gray-600">Eine Webseite für allgemeine Informationen, Projektdetails, Neuigkeiten und spezifische Informationen für Investoren und Partner.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="technik" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="section-title text-center">Technische Konzeption und Design</h2>
+                <p class="text-lg text-gray-700 mb-12 max-w-3xl mx-auto text-center">
+                    Dieser Abschnitt taucht tief in die technische Architektur von KWH-Coin ein. Er beschreibt die gewählte Blockchain-Architektur, den Konsensmechanismus, den spezifischen Algorithmus sowie die verwendeten Programmiersprachen und das Code-Management, um Transparenz und Robustheit zu gewährleisten.
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-12 items-start">
+                    <div class="animate-on-scroll slide-in-left">
+                        <h3 class="text-2xl font-semibold text-gray-800 mb-4">Blockchain-Architektur</h3>
+                        <div class="card mb-6">
+                            <h4 class="text-xl font-semibold text-[#096f84] mb-2">Eigener Coin (Layer-1)</h4>
+                            <p class="text-gray-600">Wir entscheiden uns für die Entwicklung einer eigenen Blockchain, um die Transaktionsgeschwindigkeit, Kosten und spezifischen Funktionalitäten optimal auf die Bedürfnisse des Energiehandels abstimmen zu können. Dies ermöglicht eine tiefere Integration von Mechanismen wie dem Proof-of-Generation.</p>
+                        </div>
+                        <div class="card">
+                            <h4 class="text-xl font-semibold text-[#096f84] mb-2">Datenstruktur</h4>
+                            <p class="text-gray-600">Optimiert für Energie-Transaktionsdaten, inklusive Zeitstempel, Erzeugungsnachweis-Hashes und beteiligten Adressen.</p>
+                        </div>
+                    </div>
+                    <div class="animate-on-scroll slide-in-right">
+                        <h3 class="text-2xl font-semibold text-gray-800 mb-4">Programmiersprache und Code-Management</h3>
+                        <div class="card">
+                            <h4 class="text-xl font-semibold text-[#096f84] mb-2">Programmiersprache</h4>
+                            <p class="text-gray-600 mb-2">Python wird als primäre Sprache für die Entwicklung des Blockchain-Kerns aufgrund seiner Lesbarkeit, umfangreichen Bibliotheken und der Eignung für schnelle Prototyping- und Datenverarbeitungsaufgaben gewählt. Für Smart Contracts und Frontend-Komponenten können andere Sprachen (z.B. Solidity, JavaScript) ergänzend zum Einsatz kommen.</p>
+                        </div>
+                        <div class="card mt-6">
+                            <h4 class="text-xl font-semibold text-[#096f84] mb-2">Verwaltung von Code</h4>
+                            <p class="text-gray-600">Der Quellcode wird öffentlich auf GitHub verwaltet, um Transparenz und Community-Beteiligung zu fördern.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="vorteile" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="section-title text-center">Vorteile und Anwendungsfälle</h2>
+                <p class="text-lg text-gray-700 mb-12 max-w-3xl mx-auto text-center">
+                    KWH-Coin bietet eine Vielzahl von Vorteilen für das Energiesystem und eröffnet neue, innovative Anwendungsfälle. Dieser Abschnitt beleuchtet, wie KWH-Coin zur Monetarisierung von Überschussenergie, zur Effizienzsteigerung und zur Förderung der Nachhaltigkeit beiträgt.
+                </p>
+
+                <div class="grid md:grid-cols-2 gap-12 items-start">
+                    <div class="animate-on-scroll slide-in-left">
+                        <h3 class="text-2xl font-semibold text-gray-800 mb-4">Vorteile des KWH-Coin</h3>
+                        <ul class="list-disc list-inside text-gray-600 space-y-2">
+                            <li><strong>Monetarisierung von Überschussenergie:</strong> Erzeuger erhalten einen fairen Wert für ihre sonst abgeregelte Energie.</li>
+                            <li><strong>Effizienzsteigerung im Energiesystem:</strong> Reduziert Verschwendung und fördert die Nutzung erneuerbarer Energien.</li>
+                            <li><strong>Dezentralisierung und Transparenz:</strong> Schafft einen offenen Markt ohne zentrale Intermediäre.</li>
+                            <li><strong>Förderung von Energiespeichern:</strong> Schafft Anreize für den Ausbau und die Nutzung von Speicherkapazitäten.</li>
+                            <li><strong>Beitrag zur Netzstabilität:</strong> Kann durch flexible Nachfrage- und Angebotssteuerung zur Stabilisierung der Stromnetze beitragen.</li>
+                            <li><strong>Nachhaltigkeit:</strong> Unterstützt direkt die Energiewende und die Integration grüner Technologien.</li>
+                        </ul>
+                    </div>
+                    <div class="animate-on-scroll slide-in-right">
+                        <h3 class="text-2xl font-semibold text-gray-800 mb-4">Potenzielle Anwendungsfälle</h3>
+                        <ul class="list-disc list-inside text-gray-600 space-y-2">
+                            <li>Peer-to-Peer Energiehandel in lokalen Energiegemeinschaften.</li>
+                            <li>Aufladen von Elektrofahrzeugen mit KWH-Coins.</li>
+                            <li>Vergütung von Netzdienstleistungen (z.B. Blindleistungskompensation, Frequenzhaltung).</li>
+                            <li>Grüne Zertifikate und Herkunftsnachweise für Energie auf Blockchain-Basis.</li>
+                            <li>Anreizsysteme für energieeffizientes Verhalten.</li>
+                        </ul>
                     </div>
                 </div>
             </div>
@@ -191,21 +434,29 @@
                     Die Tokenomics von KWH-Coin sind sorgfältig gestaltet, um ein nachhaltiges Ökosystem zu fördern. Dieser Abschnitt gibt einen Überblick über die Verteilung des Gesamtangebots und die Mechanismen, die den Wert und Nutzen des Coins unterstützen. Die Visualisierung zeigt die prozentuale Aufteilung der Tokens auf verschiedene Bereiche.
                 </p>
                 <div class="grid md:grid-cols-2 gap-12 items-center">
-                    <div class="chart-container">
+                    <div class="chart-container animate-on-scroll pop-in">
                         <canvas id="tokenomicsChart"></canvas>
                     </div>
-                    <div class="text-gray-700">
-                        <h3 class="text-2xl font-semibold text-gray-800 mb-4">Verteilungsübersicht</h3>
-                        <ul class="space-y-3">
+                    <div class="text-gray-700 animate-on-scroll slide-in-right">
+                        <h3 class="text-2xl font-semibold text-gray-800 mb-4">Der KWH-Coin: Tokenomics und Erzeugung</h3>
+                        <ul class="space-y-3 mb-4">
                             <li class="flex items-center"><span class="w-4 h-4 rounded-full bg-[#FF6384] mr-3"></span>Öffentlicher Verkauf: 40%</li>
                             <li class="flex items-center"><span class="w-4 h-4 rounded-full bg-[#36A2EB] mr-3"></span>Team & Berater: 20% (Gesperrt mit Vesting)</li>
                             <li class="flex items-center"><span class="w-4 h-4 rounded-full bg-[#FFCE56] mr-3"></span>Ökosystem-Entwicklung: 25%</li>
                             <li class="flex items-center"><span class="w-4 h-4 rounded-full bg-[#4BC0C0] mr-3"></span>Liquiditätsreserven: 10%</li>
                             <li class="flex items-center"><span class="w-4 h-4 rounded-full bg-[#9966FF] mr-3"></span>Marketing & Partnerschaften: 5%</li>
                         </ul>
-                        <p class="mt-6 text-sm">
-                            <strong>Gesamtangebot:</strong> 1.000.000.000 KWH <br>
-                            <strong>Anreize:</strong> Mechanismen zur Belohnung von Netzwerkteilnehmern und zur Förderung der langfristigen Haltung des Coins sind integriert.
+                        <p class="text-sm mb-4">
+                            <strong>Token-Standard:</strong> Wir planen die Entwicklung eines eigenen Coins auf einer dedizierten Blockchain (Layer-1), um maximale Kontrolle über die spezifischen Anforderungen des Energiehandels zu gewährleisten.
+                        </p>
+                        <p class="text-sm mb-4">
+                            <strong>Erzeugungsmechanismus (Mining):</strong> Das Mining von KWH-Coins erfordert den Nachweis der Erzeugung von ca. 1 kWh elektrischer Energie ("Proof-of-Generation" - PoG).
+                        </p>
+                        <p class="text-sm mb-4">
+                            <strong>Coin-Angebot:</strong> Das initiale Design sieht kein festes Maximalsupply vor, da die Coin-Erzeugung direkt an die reale Energieerzeugung gekoppelt ist. Es wird jedoch Mechanismen zur Steuerung der Geldmenge geben, um eine übermäßige Inflation zu verhindern (z.B. Burn-Mechanismen für Transaktionsgebühren oder bei Einlösung des Coins gegen Strom).
+                        </p>
+                        <p class="text-sm">
+                            <strong>Handelbarkeit und Preisbildung:</strong> Der Preis eines KWH-Coins bildet sich frei am Markt durch Angebot und Nachfrage auf der Handelsplattform.
                         </p>
                     </div>
                 </div>
@@ -219,32 +470,32 @@
                     KWH-Coin bietet eine Reihe von Funktionen, die darauf ausgelegt sind, den Energiehandel zu vereinfachen und zu verbessern. Entdecken Sie, wie unsere Plattform Dezentralisierung, Sicherheit und Benutzerfreundlichkeit kombiniert, um einen echten Mehrwert zu schaffen. Jede Funktion trägt dazu bei, unsere Vision eines zugänglicheren und effizienteren Energiemarktes zu verwirklichen.
                 </p>
                 <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    <div class="card text-center">
+                    <div class="card text-center animate-on-scroll pop-in animate-delay-100">
                         <div class="text-4xl mb-4 text-[#096f84]">🌍</div>
                         <h3 class="text-xl font-semibold text-gray-800 mb-2">Dezentraler Energiehandel</h3>
                         <p class="text-gray-600">Ermöglicht Peer-to-Peer-Energietransaktionen ohne zentrale Zwischenhändler.</p>
                     </div>
-                    <div class="card text-center">
+                    <div class="card text-center animate-on-scroll pop-in animate-delay-200">
                         <div class="text-4xl mb-4 text-[#096f84]"> contratos</div>
                         <h3 class="text-xl font-semibold text-gray-800 mb-2">Smart Contracts</h3>
                         <p class="text-gray-600">Automatisieren Vereinbarungen und Zahlungen, erhöhen Transparenz und Effizienz.</p>
                     </div>
-                    <div class="card text-center">
+                    <div class="card text-center animate-on-scroll pop-in animate-delay-300">
                         <div class="text-4xl mb-4 text-[#096f84]">🔒</div>
                         <h3 class="text-xl font-semibold text-gray-800 mb-2">Hohe Sicherheit</h3>
                         <p class="text-gray-600">Nutzung robuster Blockchain-Technologie zur Sicherung von Transaktionen und Daten.</p>
                     </div>
-                    <div class="card text-center">
+                    <div class="card text-center animate-on-scroll pop-in animate-delay-400">
                         <div class="text-4xl mb-4 text-[#096f84]">📈</div>
                         <h3 class="text-xl font-semibold text-gray-800 mb-2">Transparente Aufzeichnungen</h3>
                         <p class="text-gray-600">Alle Transaktionen sind unveränderlich im Ledger gespeichert und öffentlich einsehbar.</p>
                     </div>
-                    <div class="card text-center">
+                    <div class="card text-center animate-on-scroll pop-in animate-delay-500">
                         <div class="text-4xl mb-4 text-[#096f84]">💸</div>
                         <h3 class="text-xl font-semibold text-gray-800 mb-2">Niedrige Transaktionsgebühren</h3>
                         <p class="text-gray-600">Reduziert Kosten im Vergleich zu traditionellen Energiemärkten erheblich.</p>
                     </div>
-                    <div class="card text-center">
+                    <div class="card text-center animate-on-scroll pop-in animate-delay-600">
                         <div class="text-4xl mb-4 text-[#096f84]">📱</div>
                         <h3 class="text-xl font-semibold text-gray-800 mb-2">Benutzerfreundliche Plattform</h3>
                         <p class="text-gray-600">Intuitive Schnittstellen für einfachen Zugang und Verwaltung von KWH-Coins.</p>
@@ -260,7 +511,7 @@
                     Sicherheit ist das Fundament von KWH-Coin. Wir setzen auf modernste Blockchain-Technologie und strenge Sicherheitsprotokolle, um die Integrität der Plattform und die Vermögenswerte unserer Nutzer zu schützen. Dieser Abschnitt erläutert die wichtigsten Sicherheitsmaßnahmen, die wir implementiert haben, um Vertrauen und Zuverlässigkeit zu gewährleisten.
                 </p>
                 <div class="grid md:grid-cols-2 gap-8 items-start">
-                    <div class="card">
+                    <div class="card animate-on-scroll slide-in-left">
                         <h3 class="text-2xl font-semibold text-gray-800 mb-3">Blockchain-Sicherheit</h3>
                         <p class="text-gray-600 mb-4">
                             KWH-Coin basiert auf einer robusten und erprobten Blockchain, die kryptographische Sicherheit für alle Transaktionen bietet. Jede Transaktion wird validiert und in einem unveränderlichen Ledger aufgezeichnet, was Manipulationen verhindert.
@@ -270,7 +521,7 @@
                             Unsere Smart Contracts und die gesamte Plattformarchitektur werden regelmäßig von unabhängigen Sicherheitsfirmen überprüft. Diese Audits helfen uns, potenzielle Schwachstellen proaktiv zu identifizieren und zu beheben.
                         </p>
                     </div>
-                    <div class="card">
+                    <div class="card animate-on-scroll slide-in-right">
                         <h3 class="text-2xl font-semibold text-gray-800 mb-3">Empfohlene Sicherheitspraktiken</h3>
                         <p class="text-gray-600 mb-4">
                             Wir klären unsere Nutzer über Best Practices zur Sicherung ihrer Wallets und privaten Schlüssel auf. Dazu gehören die Verwendung starker Passwörter, Zwei-Faktor-Authentifizierung (wo anwendbar) und Vorsicht vor Phishing-Versuchen.
@@ -288,64 +539,94 @@
             <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                 <h2 class="section-title text-center">Unsere Roadmap</h2>
                 <p class="text-lg text-gray-700 mb-12 max-w-3xl mx-auto text-center">
-                    Die Roadmap von KWH-Coin skizziert unsere strategischen Ziele und geplanten Entwicklungen für die kommenden Quartale. Wir sind bestrebt, die Plattform kontinuierlich zu verbessern und neue Funktionen einzuführen, um den Bedürfnissen unserer wachsenden Community gerecht zu werden. Dieser Zeitplan gibt Ihnen einen Einblick in unsere zukünftigen Meilensteine.
+                    Die Roadmap von KWH-Coin skizziert unsere strategischen Ziele und geplanten Entwicklungen für die kommenden Phasen. Wir sind bestrebt, die Plattform kontinuierlich zu verbessern und neue Funktionen einzuführen, um den Bedürfnissen unserer wachsenden Community gerecht zu werden. Dieser Zeitplan gibt Ihnen einen Einblick in unsere zukünftigen Meilensteine.
                 </p>
                 <div class="relative">
                     <div class="hidden md:block absolute top-0 bottom-0 left-1/2 w-0.5 bg-gray-300 transform -translate-x-1/2"></div>
 
                     <div class="space-y-12 md:space-y-0">
                         <div class="md:grid md:grid-cols-2 md:gap-8 items-start">
-                            <div class="md:text-right md:pr-8 mb-4 md:mb-0">
-                                <div class="text-xl font-semibold text-[#096f84]">Q3 2024</div>
-                                <div class="text-sm text-gray-500">Abgeschlossen</div>
+                            <div class="md:text-right md:pr-8 mb-4 md:mb-0 animate-on-scroll slide-in-left">
+                                <div class="text-xl font-semibold text-[#096f84]">Phase 1</div>
+                                <div class="text-sm text-gray-500">Analyse und Design (Abgeschlossen)</div>
                             </div>
-                            <div class="relative md:pl-8">
-                                <div class="hidden md:block absolute -left-1.5 top-1.5 w-4 h-4 bg-[#096f84] rounded-full border-2 border-white"></div>
+                            <div class="relative md:pl-8 animate-on-scroll pop-in">
+                                <div class="hidden md:block absolute -left-1.5 top-1.5 w-4 h-4 bg-[#096f84] rounded-full border-2 border-white animate-pop-in"></div>
                                 <div class="card">
-                                    <h4 class="text-lg font-semibold text-gray-800 mb-1">Plattform-Launch & Token-Generierung</h4>
-                                    <p class="text-gray-600">Erfolgreicher Start der KWH-Coin Plattform und Generierung des KWH-Tokens.</p>
+                                    <h4 class="text-lg font-semibold text-gray-800 mb-1">Konzeptentwicklung & Planung</h4>
+                                    <p class="text-gray-600">Konzeptentwicklung, Anforderungsdefinition, initiale Wettbewerbsanalyse, Stakeholder-Identifikation, Entscheidung für eigenen Coin, Wahl der primären Programmiersprache (Python), Planung der Kernkomponenten (Blockchain, Coin, Wallet, Webseite).</p>
                                 </div>
                             </div>
                         </div>
 
                         <div class="md:grid md:grid-cols-2 md:gap-8 items-start">
-                            <div class="md:col-start-2 md:text-left md:pl-8 mb-4 md:mb-0">
-                                <div class="text-xl font-semibold text-[#096f84]">Q4 2024</div>
-                                <div class="text-sm text-gray-500">In Arbeit</div>
+                            <div class="md:col-start-2 md:text-left md:pl-8 mb-4 md:mb-0 animate-on-scroll slide-in-right">
+                                <div class="text-xl font-semibold text-[#096f84]">Phase 2</div>
+                                <div class="text-sm text-gray-500">Implementierung Blockchain & Coin (Q2 2024 - Q4 2024)</div>
                             </div>
-                            <div class="relative md:col-start-1 md:row-start-1 md:text-right md:pr-8">
-                                <div class="hidden md:block absolute -right-1.5 top-1.5 w-4 h-4 bg-[#096f84] rounded-full border-2 border-white"></div>
+                            <div class="relative md:col-start-1 md:row-start-1 md:text-right md:pr-8 animate-on-scroll pop-in">
+                                <div class="hidden md:block absolute -right-1.5 top-1.5 w-4 h-4 bg-[#096f84] rounded-full border-2 border-white animate-pop-in"></div>
                                 <div class="card">
-                                    <h4 class="text-lg font-semibold text-gray-800 mb-1">Erste Börsenlistungen & Partnerschaften</h4>
-                                    <p class="text-gray-600">Sicherung von Listungen auf ausgewählten Kryptowährungsbörsen und Aufbau strategischer Partnerschaften im Energiesektor.</p>
+                                    <h4 class="text-lg font-semibold text-gray-800 mb-1">Blockchain- & Coin-Entwicklung</h4>
+                                    <p class="text-gray-600">Entwicklung des Kernprotokolls in Python, Implementierung des gewählten Konsensmechanismus, Definition des Proof-of-Generation Mechanismus, Festlegung der Tokenomics-Details, Integration in die Blockchain.</p>
+                                    <p class="text-sm text-gray-500 mt-2">Status: In Progress auf Github (Blockchain), Designphase (Coin)</p>
                                 </div>
                             </div>
                         </div>
 
                          <div class="md:grid md:grid-cols-2 md:gap-8 items-start">
-                            <div class="md:text-right md:pr-8 mb-4 md:mb-0">
-                                <div class="text-xl font-semibold text-[#096f84]">Q1 2025</div>
-                                <div class="text-sm text-gray-500">Geplant</div>
+                            <div class="md:text-right md:pr-8 mb-4 md:mb-0 animate-on-scroll slide-in-left">
+                                <div class="text-xl font-semibold text-[#096f84]">Phase 3</div>
+                                <div class="text-sm text-gray-500">Implementierung Wallet & Webseite (Q3 2024 - Q1 2025)</div>
                             </div>
-                            <div class="relative md:pl-8">
-                                <div class="hidden md:block absolute -left-1.5 top-1.5 w-4 h-4 bg-gray-300 rounded-full border-2 border-white"></div>
+                            <div class="relative md:pl-8 animate-on-scroll pop-in">
+                                <div class="hidden md:block absolute -left-1.5 top-1.5 w-4 h-4 bg-[#096f84] rounded-full border-2 border-white animate-pop-in"></div>
                                 <div class="card">
-                                    <h4 class="text-lg font-semibold text-gray-800 mb-1">Mobile App Entwicklung</h4>
-                                    <p class="text-gray-600">Beginn der Entwicklung einer benutzerfreundlichen mobilen Anwendung für iOS und Android.</p>
+                                    <h4 class="text-lg font-semibold text-gray-800 mb-1">Wallet- & Webseite-Entwicklung</h4>
+                                    <p class="text-gray-600">Entwicklung einer sicheren und benutzerfreundlichen Wallet-Anwendung, Aufbau der informativen Webseite für Projektinformationen und Investoren, spätere Erweiterung zur Handelsplattform.</p>
+                                    <p class="text-sm text-gray-500 mt-2">Status: In Progress (Wallet), Konzeption (Webseite)</p>
                                 </div>
                             </div>
                         </div>
 
                         <div class="md:grid md:grid-cols-2 md:gap-8 items-start">
-                           <div class="md:col-start-2 md:text-left md:pl-8 mb-4 md:mb-0">
-                                <div class="text-xl font-semibold text-[#096f84]">Q2 2025</div>
-                                <div class="text-sm text-gray-500">Geplant</div>
+                           <div class="md:col-start-2 md:text-left md:pl-8 mb-4 md:mb-0 animate-on-scroll slide-in-right">
+                                <div class="text-xl font-semibold text-[#096f84]">Phase 4</div>
+                                <div class="text-sm text-gray-500">Testphase (Q1 2025 - Q2 2025)</div>
                             </div>
-                            <div class="relative md:col-start-1 md:row-start-1 md:text-right md:pr-8">
-                                <div class="hidden md:block absolute -right-1.5 top-1.5 w-4 h-4 bg-gray-300 rounded-full border-2 border-white"></div>
+                            <div class="relative md:col-start-1 md:row-start-1 md:text-right md:pr-8 animate-on-scroll pop-in">
+                                <div class="hidden md:block absolute -right-1.5 top-1.5 w-4 h-4 bg-gray-300 rounded-full border-2 border-white animate-pop-in"></div>
                                 <div class="card">
-                                    <h4 class="text-lg font-semibold text-gray-800 mb-1">Integration von IoT-Geräten</h4>
-                                    <p class="text-gray-600">Erforschung und Implementierung der Integration mit Smart Metern und anderen IoT-Geräten zur automatisierten Energieerfassung.</p>
+                                    <h4 class="text-lg font-semibold text-gray-800 mb-1">Umfassende Tests & Audits</h4>
+                                    <p class="text-gray-600">Internes Alpha-Testing der Blockchain und Wallet, geschlossenes Beta-Testing mit ausgewählten Partnern und Erzeugern, Sicherheitsaudits.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="md:grid md:grid-cols-2 md:gap-8 items-start">
+                            <div class="md:text-right md:pr-8 mb-4 md:mb-0 animate-on-scroll slide-in-left">
+                                <div class="text-xl font-semibold text-[#096f84]">Phase 5</div>
+                                <div class="text-sm text-gray-500">Demonstration und Pilotprojekte (Ab Q3 2025)</div>
+                            </div>
+                            <div class="relative md:pl-8 animate-on-scroll pop-in">
+                                <div class="hidden md:block absolute -left-1.5 top-1.5 w-4 h-4 bg-gray-300 rounded-full border-2 border-white animate-pop-in"></div>
+                                <div class="card">
+                                    <h4 class="text-lg font-semibold text-gray-800 mb-1">Pilotprojekte & Feedback</h4>
+                                    <p class="text-gray-600">Start erster Pilotprojekte mit Energieerzeugern und -verbrauchern, Demonstration der Funktionalität und des Nutzens in realen Szenarien, Sammeln von Feedback und kontinuierliche Verbesserung.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="md:grid md:grid-cols-2 md:gap-8 items-start">
+                           <div class="md:col-start-2 md:text-left md:pl-8 mb-4 md:mb-0 animate-on-scroll slide-in-right">
+                                <div class="text-xl font-semibold text-[#096f84]">Phase 6</div>
+                                <div class="text-sm text-gray-500">Markteinführung und Skalierung (Ab 2026)</div>
+                            </div>
+                            <div class="relative md:col-start-1 md:row-start-1 md:text-right md:pr-8 animate-on-scroll pop-in">
+                                <div class="hidden md:block absolute -right-1.5 top-1.5 w-4 h-4 bg-gray-300 rounded-full border-2 border-white animate-pop-in"></div>
+                                <div class="card">
+                                    <h4 class="text-lg font-semibold text-gray-800 mb-1">Breiter Rollout & Expansion</h4>
+                                    <p class="text-gray-600">Breiter Rollout der Plattform, Aufbau von Partnerschaften mit Energieversorgern, Netzbetreibern und Technologieanbietern, internationale Expansion.</p>
                                 </div>
                             </div>
                         </div>
@@ -354,13 +635,44 @@
             </div>
         </section>
 
-        <section id="kaufen" class="py-16 md:py-24 bg-gray-50">
+        <section id="team" class="py-16 md:py-24 bg-gray-50">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="section-title text-center">Unser Team</h2>
+                <p class="text-lg text-gray-700 mb-12 max-w-3xl mx-auto text-center">
+                    Das KWH-Coin Projekt wird von einem engagierten Team aus Experten in den Bereichen Blockchain, Energie und Softwareentwicklung vorangetrieben. Hier stellen wir Ihnen die Autoren des Whitepapers vor.
+                </p>
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    <div class="card text-center animate-on-scroll pop-in animate-delay-100">
+                        <img src="https://placehold.co/150x150/096f84/FFFFFF?text=Tobias+Pöhnl" alt="[Image of Tobias Pöhnl]" class="rounded-full w-24 h-24 mx-auto mb-4 object-cover">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-1">Tobias Pöhnl</h3>
+                        <p class="text-gray-600 text-sm">Co-Founder, Blockchain-Architekt</p>
+                    </div>
+                    <div class="card text-center animate-on-scroll pop-in animate-delay-200">
+                        <img src="https://placehold.co/150x150/096f84/FFFFFF?text=David+Trieu" alt="[Image of David Trieu]" class="rounded-full w-24 h-24 mx-auto mb-4 object-cover">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-1">David Trieu</h3>
+                        <p class="text-gray-600 text-sm">Co-Founder, Lead Developer</p>
+                    </div>
+                    <div class="card text-center animate-on-scroll pop-in animate-delay-300">
+                        <img src="https://placehold.co/150x150/096f84/FFFFFF?text=Jonny+Trieu" alt="[Image of Jonny Trieu]" class="rounded-full w-24 h-24 mx-auto mb-4 object-cover">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-1">Jonny Trieu</h3>
+                        <p class="text-gray-600 text-sm">Co-Founder, UX/UI Designer</p>
+                    </div>
+                    <div class="card text-center animate-on-scroll pop-in animate-delay-400">
+                        <img src="https://placehold.co/150x150/096f84/FFFFFF?text=Florian+Lankes" alt="[Image of Florian Lankes]" class="rounded-full w-24 h-24 mx-auto mb-4 object-cover">
+                        <h3 class="text-xl font-semibold text-gray-800 mb-1">Florian Lankes</h3>
+                        <p class="text-gray-600 text-sm">Co-Founder, Energieexperte</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="kaufen" class="py-16 md:py-24 bg-white">
             <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                 <h2 class="section-title text-center">Wie man KWH-Coin kauft</h2>
                 <p class="text-lg text-gray-700 mb-8 max-w-3xl mx-auto text-center">
                     Dieser Abschnitt wird detaillierte Anleitungen zum Erwerb von KWH-Coins enthalten, sobald diese auf Börsen gelistet sind oder andere Kaufmechanismen verfügbar werden. Wir werden Sie über empfohlene Wallets und die notwendigen Schritte informieren.
                 </p>
-                <div class="card max-w-2xl mx-auto">
+                <div class="card max-w-2xl mx-auto animate-on-scroll pop-in">
                     <h3 class="text-xl font-semibold text-gray-800 mb-3">Aktueller Status</h3>
                     <p class="text-gray-600">
                         KWH-Coin befindet sich derzeit in der Phase vor dem öffentlichen Handel. Informationen zu Börsenlistungen und Kaufmöglichkeiten werden hier und über unsere offiziellen Kanäle bekannt gegeben, sobald verfügbar.
@@ -372,35 +684,47 @@
             </div>
         </section>
 
-        <section id="faq" class="py-16 md:py-24 bg-white">
+        <section id="faq" class="py-16 md:py-24 bg-gray-50">
             <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                 <h2 class="section-title text-center">Häufig gestellte Fragen (FAQ)</h2>
                 <p class="text-lg text-gray-700 mb-12 max-w-3xl mx-auto text-center">
                     Hier finden Sie Antworten auf einige der häufigsten Fragen zu KWH-Coin. Wenn Ihre Frage hier nicht beantwortet wird, zögern Sie bitte nicht, uns zu kontaktieren. Klicken Sie auf eine Frage, um die Antwort anzuzeigen.
                 </p>
                 <div class="max-w-3xl mx-auto space-y-4">
-                    <details class="faq-item card p-0">
+                    <details class="faq-item card p-0 animate-on-scroll pop-in animate-delay-100">
                         <summary class="p-6 text-lg">Was ist KWH-Coin?</summary>
                         <div class="p-6 pt-0 text-gray-600">
                             KWH-Coin ist eine Kryptowährung, die darauf abzielt, den Energiemarkt durch den Einsatz von Blockchain-Technologie zu revolutionieren. Sie ermöglicht dezentralen, transparenten und effizienten Energiehandel.
                         </div>
                     </details>
-                    <details class="faq-item card p-0">
+                    <details class="faq-item card p-0 animate-on-scroll pop-in animate-delay-200">
                         <summary class="p-6 text-lg">Wie kann ich KWH-Coin kaufen?</summary>
                         <div class="p-6 pt-0 text-gray-600">
                             Informationen zum Kauf von KWH-Coin werden bekannt gegeben, sobald der Coin auf Börsen gelistet ist. Bitte beachten Sie die Ankündigungen im Abschnitt "Wie man KWH-Coin kauft" und auf unseren offiziellen Kanälen.
                         </div>
                     </details>
-                    <details class="faq-item card p-0">
+                    <details class="faq-item card p-0 animate-on-scroll pop-in animate-delay-300">
                         <summary class="p-6 text-lg">Auf welcher Blockchain basiert KWH-Coin?</summary>
                         <div class="p-6 pt-0 text-gray-600">
-                            KWH-Coin basiert auf einer sicheren und etablierten Blockchain-Plattform, die für ihre Robustheit und Skalierbarkeit bekannt ist. Spezifische Details zur Blockchain werden in unserer technischen Dokumentation bereitgestellt. (Platzhalter für spezifische Blockchain-Info)
+                            KWH-Coin basiert auf einer eigenen Layer-1 Blockchain, die speziell für die Anforderungen des Energiehandels entwickelt wird, um optimale Transaktionsgeschwindigkeit und Funktionalität zu gewährleisten.
                         </div>
                     </details>
-                    <details class="faq-item card p-0">
+                    <details class="faq-item card p-0 animate-on-scroll pop-in animate-delay-400">
                         <summary class="p-6 text-lg">Wie wird die Sicherheit von KWH-Coin gewährleistet?</summary>
                         <div class="p-6 pt-0 text-gray-600">
                             Die Sicherheit wird durch die zugrundeliegende Blockchain-Technologie, regelmäßige Sicherheitsaudits unserer Smart Contracts und die Förderung von Best Practices für die Wallet-Sicherheit der Nutzer gewährleistet.
+                        </div>
+                    </details>
+                    <details class="faq-item card p-0 animate-on-scroll pop-in animate-delay-500">
+                        <summary class="p-6 text-lg">Was ist Proof-of-Generation (PoG)?</summary>
+                        <div class="p-6 pt-0 text-gray-600">
+                            Proof-of-Generation (PoG) ist der Mechanismus, durch den KWH-Coins erzeugt werden. Er erfordert den Nachweis der Erzeugung von ca. 1 kWh elektrischer Energie, typischerweise durch zertifizierte Messgeräte und Oracles.
+                        </div>
+                    </details>
+                    <details class="faq-item card p-0 animate-on-scroll pop-in animate-delay-600">
+                        <summary class="p-6 text-lg">Welche Programmiersprache wird für den KWH-Coin verwendet?</summary>
+                        <div class="p-6 pt-0 text-gray-600">
+                            Python wird als primäre Sprache für die Entwicklung des Blockchain-Kerns gewählt, aufgrund seiner Lesbarkeit, umfangreichen Bibliotheken und der Eignung für schnelle Prototyping- und Datenverarbeitungsaufgaben. Für Smart Contracts und Frontend können andere Sprachen wie Solidity oder JavaScript ergänzend zum Einsatz kommen.
                         </div>
                     </details>
                 </div>
@@ -418,9 +742,13 @@
                 <div>
                     <h4 class="text-lg font-semibold text-white mb-3">Nützliche Links</h4>
                     <ul class="space-y-2 text-sm">
-                        <li><a href="#ueber" class="hover:text-white">Über uns</a></li>
+                        <li><a href="#einleitung" class="hover:text-white">Einleitung</a></li>
+                        <li><a href="#oekosystem" class="hover:text-white">Ökosystem</a></li>
+                        <li><a href="#technik" class="hover:text-white">Technik</a></li>
+                        <li><a href="#vorteile" class="hover:text-white">Vorteile</a></li>
                         <li><a href="#tokenomics" class="hover:text-white">Tokenomics</a></li>
                         <li><a href="#roadmap" class="hover:text-white">Roadmap</a></li>
+                        <li><a href="#team" class="hover:text-white">Team</a></li>
                         <li><a href="#faq" class="hover:text-white">FAQ</a></li>
                     </ul>
                 </div>
@@ -440,6 +768,7 @@
             <div class="text-center text-sm border-t border-gray-700 pt-8">
                 &copy; <span id="currentYear"></span> KWH-Coin. Alle Rechte vorbehalten.
                 <p class="mt-1">Dies ist eine konzeptionelle Webseite. KWH-Coin ist ein hypothetisches Projekt.</p>
+                <p class="text-xs mt-2">Disclaimer: Dieses Whitepaper dient ausschließlich Informationszwecken und stellt keine Anlageberatung oder ein Angebot zum Verkauf von Wertpapieren dar. Die Entwicklung und Implementierung des KWH-Coin Projekts unterliegt Risiken und Unsicherheiten.</p>
             </div>
         </div>
     </footer>
@@ -542,26 +871,36 @@
                 yearSpan.textContent = new Date().getFullYear();
             }
 
-            // FAQ Toggle (alternative for browsers not fully supporting <details> styling or for more control)
-            // The <details> element itself is quite capable, but this is an example if more JS control is needed.
-            // For this example, we'll rely on the native <details> behavior.
-            // If specific animations or state management were needed, one might do:
-            /*
-            const faqItems = document.querySelectorAll('.faq-item summary');
-            faqItems.forEach(summary => {
-                summary.addEventListener('click', (event) => {
-                    // Custom toggle logic here if needed
-                    // For example, to close other open items:
-                    // if (!summary.parentElement.hasAttribute('open')) { // Check if it's about to open
-                    //     document.querySelectorAll('.faq-item[open]').forEach(openItem => {
-                    //         if (openItem !== summary.parentElement) {
-                    //             openItem.removeAttribute('open');
-                    //         }
-                    //     });
-                    // }
+            // Initial animations for hero section
+            document.querySelector('#hero h1').classList.add('animate-hero-text');
+            document.querySelector('#hero p').classList.add('animate-hero-text');
+            document.querySelector('#hero > div > div:last-child').classList.add('animate-hero-buttons'); // Select the div containing the buttons
+
+            // Intersection Observer for scroll animations
+            const animateOnScrollElements = document.querySelectorAll('.animate-on-scroll');
+
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1 // Trigger when 10% of the element is visible
+            };
+
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        // If it's a roadmap item, also animate its circle
+                        if (entry.target.closest('#roadmap') && entry.target.querySelector('.hidden.md\\:block.absolute.w-4.h-4.rounded-full.border-2.border-white')) {
+                            entry.target.querySelector('.hidden.md\\:block.absolute.w-4.h-4.rounded-full.border-2.border-white').style.animation = 'popIn 0.8s ease-out forwards';
+                        }
+                        observer.unobserve(entry.target); // Stop observing once animated
+                    }
                 });
+            }, observerOptions);
+
+            animateOnScrollElements.forEach(element => {
+                observer.observe(element);
             });
-            */
         });
     </script>
 
