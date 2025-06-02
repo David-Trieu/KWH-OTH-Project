@@ -1,107 +1,228 @@
+
 <!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="icon" href="/static/images/fav.PNG">
-        <link rel="stylesheet" href="/static/css/style.css">
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KWH-Coin Wallet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="static/css/style.css">
+</head>
+<body class="antialiased">
 
-        <title>Codies Alert</title>
-    </head>
-    <body>
-
-        <div class="container mt-5"> <!-- Wallet Information -->
-			<div class="card mb-4 text-center">
-				<div class="card-body">
-					<h1 class="card-title">Wallet</h1>
-					<p class="card-text"><strong>Betrag:</strong> <span th:text="${wallet.amount}"></span></p>
-				</div>
-			</div> <!-- Wallet Plan Information -->
-			<div class="accordion mb-4">
-				<div class="accordion-item">
-					<h2 class="accordion-header"> <button class="accordion-button" type="button"
-							data-bs-toggle="collapse" data-bs-target="#received" aria-expanded="true"
-							aria-controls="#received">
-							Erhaltene Coins
-						</button>
-					</h2>
-					<div id="received" class="accordion-collapse collapse " data-bs-parent="#accordionExample">
-						<div class="card">
-							<div class="card-body">
-								<div class="row">
-
-									<div class="col fw-bold">Transaktions Nummer</div>
-									<div class="col fw-bold">Sender</div>
-									<div class="col fw-bold">Betrag</div>
-
-								</div>
-								<div th:each="element: ${transactionsReceived}">
-									<hr class="my-4">
-									<div class="row">
-										<div class="col" th:text="${element.transactionId}"></div>
-										<div class="col" th:text="${element.transactionSender.walletOwner.username}">
-										</div>
-										<div class="col" th:text="${element.transactionAmount}"></div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-
-				</div>
-			</div>
-			<!-- Transactions Sent -->
-			<div class="accordion mb-4">
-				<div class="accordion-item">
-					<h2 class="accordion-header"> <button class="accordion-button" type="button"
-							data-bs-toggle="collapse" data-bs-target="#received2" aria-expanded="true"
-							aria-controls="#received2">
-							Gesendete Coins
-						</button>
-					</h2>
-					<div id="received2" class="accordion-collapse collapse " data-bs-parent="#accordionExample2">
-						<div class="card">
-							<div class="card-body">
-								<div class="row">
-
-									<div class="col fw-bold">Transaktions Nummer</div>
-									<div class="col fw-bold">Empfänger</div>
-									<div class="col fw-bold">Betrag</div>
-
-								</div>
-								<div th:each="element: ${transactionsSend}">
-									<hr class="my-4">
-									<div class="row">
-										<div class="col" th:text="${element.transactionId}"></div>
-										<div class="col" th:text="${element.transactionReceiver.walletOwner.username}">
-										</div>
-										<div class="col" th:text="${element.transactionAmount}"></div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-
-				</div>
-			</div>
+    <header class="bg-white/80 backdrop-blur-md shadow-sm fixed top-0 left-0 right-0 z-50">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <a href="/" class="text-2xl font-bold text-[#096f84]">KWH<span class="text-[#212529]">Coin</span></a>
+                </div>
+                <nav>
+                     <a href="/" class="nav-link text-gray-700 hover:text-[#096f84] font-medium">Zur Hauptseite</a>
+                </nav>
+            </div>
         </div>
+    </header>
 
-        <div class="wallet-container" align="center">
-            <h1> Send KWH </h1>
+    <main class="pt-24 container mx-auto px-4 sm:px-6 lg:px-8">
+        <h1 class="section-title text-center mb-12">Mein KWH-Coin Wallet</h1>
 
-            <form action="#" id = "form" method="post">
-                <label for="from">From Address:</label><br>
-                <input type="text" id="from" name="fromAddress" ><br>
-                <label for="to">To Address:</label><br>
-                <input type="text" id="to" name="toAddress" ><br><br>
-                <label for="amount">Amount:</label><br>
-                <input type="number" id="amount" name="Amount" ><br><br>
-                <span> {{ message }} </span> <br>
-                <input type="submit" value="Send">
+        <!-- Wallet Balance -->
+        <section id="wallet-balance" class="mb-12 animate-on-scroll pop-in">
+            <div class="card max-w-md mx-auto text-center">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-3">Aktueller Kontostand</h2>
+                <div class="flex items-center justify-center text-[#096f84] mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
+                    </svg>
+                    <p class="text-4xl font-bold">1.234,56 <span class="text-2xl font-medium">KWH</span></p>
+                </div>
+                <p class="text-sm text-gray-500 mt-1">Ihr aktuelles Guthaben an KWH-Coins.</p>
+                <div class="mt-4">
+                     <button class="secondary-cta-button text-sm py-2 px-4 rounded-md">Guthaben aufladen (Demo)</button>
+                </div>
+            </div>
+        </section>
 
-            </form>
+        <!-- Send KWH Coins -->
+        <section id="send-kwh" class="mb-12 animate-on-scroll pop-in animate-delay-200">
+            <div class="card max-w-lg mx-auto">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">KWH-Coins Senden</h2>
+                <form id="send-kwh-form" class="space-y-6">
+                    <div>
+                        <label for="recipient-address" class="block text-sm font-medium text-gray-700 mb-1">Empfängeradresse</label>
+                        <input type="text" id="recipient-address" name="recipient-address" required
+                               aria-describedby="recipient-address-help"
+                               class="w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#096f84] focus:border-transparent transition-colors"
+                               placeholder="0x...">
+                        <p id="recipient-address-help" class="mt-1 text-xs text-gray-500">Geben Sie die Wallet-Adresse des Empfängers ein.</p>
+                    </div>
+                    <div>
+                        <label for="amount" class="block text-sm font-medium text-gray-700 mb-1">Betrag (KWH)</label>
+                        <input type="number" id="amount" name="amount" step="any" min="0.000001" required
+                               aria-describedby="amount-help"
+                               class="w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#096f84] focus:border-transparent transition-colors"
+                               placeholder="100.00">
+                        <p id="amount-help" class="mt-1 text-xs text-gray-500">Geben Sie den zu sendenden Betrag ein.</p>
+                    </div>
+                    <button type="submit" class="w-full cta-button text-lg font-semibold py-3 px-8 rounded-lg shadow-md flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                          <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 16.571V11.69l-4 1.142a1 1 0 00-.895 1.076l.5 4A1 1 0 006 19h8a1 1 0 00.895-1.429l.5-4a1 1 0 00-.895-1.076l-4-1.142V16.57a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+                        </svg>
+                        Senden
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Transaction History -->
+        <section id="transaction-history" class="mb-12 animate-on-scroll pop-in animate-delay-400">
+            <div class="card">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Transaktionsverlauf</h2>
+                <div class="overflow-x-auto rounded-lg border border-gray-200 shadow-sm">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Datum</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Typ</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Betrag (KWH)</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Adresse</th>
+                                <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">2024-07-28 10:30</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                        <svg class="w-4 h-4 mr-1.5 -ml-0.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v4a1 1 0 102 0V7zm-1 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"></path></svg>
+                                        Gesendet
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">-50.00</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 truncate max-w-xs" title="0xAbcDeF1234567890AbcDeF1234567890AbcDeF12">0xAbcDe...F12</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        Bestätigt
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">2024-07-27 15:45</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                         <svg class="w-4 h-4 mr-1.5 -ml-0.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                                        Empfangen
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">+120.75</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 truncate max-w-xs" title="0xZyXwVuT987654321ZyXwVuT987654321ZyXwVuT9">0xZyXwV...uT9</td>
+                                 <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        Bestätigt
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">2024-07-26 09:12</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                        <svg class="w-4 h-4 mr-1.5 -ml-0.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v4a1 1 0 102 0V7zm-1 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"></path></svg>
+                                        Gesendet
+                                    </span>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">-200.00</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 truncate max-w-xs" title="0xMnOpQrS543210987MnOpQrS543210987MnOpQrS5">0xMnOpQ...rS5</td>
+                                 <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                        Ausstehend
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                 <p class="text-xs text-gray-500 mt-4 text-center">Dies sind Beispieldaten. Echte Transaktionen werden hier angezeigt.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-gray-800 text-gray-300 py-12 mt-16">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid md:grid-cols-3 gap-8 mb-8">
+                <div>
+                    <h4 class="text-lg font-semibold text-white mb-3">KWH-Coin</h4>
+                    <p class="text-sm">Die Zukunft der dezentralen Energie.</p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold text-white mb-3">Nützliche Links</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="./index.html#einleitung" class="hover:text-white">Einleitung</a></li>
+                        <li><a href="./index.html#oekosystem" class="hover:text-white">Ökosystem</a></li>
+                        <li><a href="./index.html#proof-of-generation" class="hover:text-white">PoG</a></li>
+                        <li><a href="./index.html" class="hover:text-white">Hauptseite</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-semibold text-white mb-3">Kontakt</h4>
+                    <p class="text-sm">Email: info@kwhcoin.example.com</p>
+                </div>
+            </div>
+            <div class="text-center text-sm border-t border-gray-700 pt-8">
+                &copy; <span id="currentYearWallet"></span> KWH-Coin. Alle Rechte vorbehalten.
+                <p class="mt-1">Dies ist eine konzeptionelle Wallet-Seite.</p>
+            </div>
         </div>
-    </body>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Set current year in footer
+            const yearSpanWallet = document.getElementById('currentYearWallet');
+            if (yearSpanWallet) {
+                yearSpanWallet.textContent = new Date().getFullYear();
+            }
+
+            // Handle KWH send form
+            const sendKwhForm = document.getElementById('send-kwh-form');
+            if (sendKwhForm) {
+                sendKwhForm.addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    const recipient = document.getElementById('recipient-address').value;
+                    const amount = document.getElementById('amount').value;
+
+                    // Basic validation
+                    if (!recipient || !amount || parseFloat(amount) <= 0) {
+                        alert('Bitte geben Sie eine gültige Empfängeradresse und einen positiven Betrag ein.');
+                        return;
+                    }
+
+                    alert(`Sende ${amount} KWH an ${recipient}\n(Dies ist eine Demo - keine echte Transaktion)`);
+                    // Here you would typically interact with a backend or blockchain
+                    sendKwhForm.reset();
+                });
+            }
+
+            // Intersection Observer for scroll animations
+            const animateOnScrollElements = document.querySelectorAll('.animate-on-scroll');
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1
+            };
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, observerOptions);
+            animateOnScrollElements.forEach(element => {
+                observer.observe(element);
+            });
+        });
+    </script>
+
+</body>
 </html>

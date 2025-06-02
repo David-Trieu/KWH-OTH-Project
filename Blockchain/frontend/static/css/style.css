@@ -1,120 +1,199 @@
-/*
- * Base structure
- */
-html, body {
-	height: 100%;
-}
 
 body {
-	padding-top: 56px;
-	padding-left: 0;
+    font-family: 'Inter', sans-serif;
+    background-color: #F8F9FA; /* Warm Neutral Background */
+    color: #212529; /* Dark Gray Text */
 }
-
-/*
- * main layout
- */
-.layout-main {
-    display: flex;
-    min-height: calc(100vh - 52px);
-    overflow: hidden;
+.hero-gradient {
+    background: linear-gradient(135deg, #096f84 0%, #075f72 100%); /* Teal Accent Gradient */
+    background-size: 200% 200%; /* For gradient animation */
+    animation: gradientAnimation 10s ease infinite alternate; /* Apply gradient animation */
 }
-
-/*
- * Content
- */
-.layout-content {
+.section-title {
+    font-size: 2.25rem; /* 36px */
+    font-weight: 600;
+    margin-bottom: 1.5rem; /* 24px */
+    color: #096f84; /* Teal Accent */
+}
+.nav-link {
+    transition: color 0.3s ease;
+}
+.nav-link:hover {
+    color: #096f84; /* Teal Accent */
+}
+.cta-button {
+    background-color: #096f84; /* Teal Accent */
+    color: white;
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Add transform for scale */
+}
+.cta-button:hover {
+    background-color: #075f72; /* Darker Teal */
+    transform: scale(1.05); /* Slightly scale up on hover */
+}
+.secondary-cta-button {
+    border-color: #096f84; /* Teal Accent */
+    color: #096f84; /* Teal Accent */
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease; /* Add transform for scale */
+}
+.secondary-cta-button:hover {
+    background-color: #096f84; /* Teal Accent */
+    color: white;
+    transform: scale(1.05); /* Slightly scale up on hover */
+}
+.card {
+    background-color: white;
+    border-radius: 0.75rem; /* 12px */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    padding: 1.5rem; /* 24px */
+    transition: all 0.3s ease; /* For hover effects */
+}
+.card:hover {
+    transform: translateY(-5px) scale(1.01); /* Lift and slightly scale up */
+    box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.15), 0 5px 10px -5px rgba(0, 0, 0, 0.08); /* Stronger shadow */
+}
+.faq-item summary {
+    cursor: pointer;
+    font-weight: 500;
+    color: #096f84;
+}
+.faq-item summary::-webkit-details-marker {
+    display: none;
+}
+.faq-item summary::after {
+    content: '+';
+    float: right;
+    font-size: 1.5em;
+    line-height: 1;
+    transition: transform 0.3s ease;
+}
+.faq-item[open] summary::after {
+    transform: rotate(45deg);
+}
+.chart-container {
+    position: relative;
     width: 100%;
-    padding-top: 0px;
+    max-width: 400px; /* Max width for donut chart */
+    margin-left: auto;
+    margin-right: auto;
+    height: 300px; /* Base height */
+    max-height: 350px; /* Max height */
+}
+@media (min-width: 768px) {
+    .chart-container {
+        height: 350px;
+        max-height: 400px;
+    }
+}
+/* Custom scrollbar for a more modern look - optional */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb {
+    background: #096f84; /* Teal Accent */
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #075f72; /* Darker Teal */
 }
 
-.container {
-	width: 100%;
-	padding-top: 20px;
+/* Animations */
+@keyframes gradientAnimation {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
-/*
- * Sidebar
- */
-.sidebar {
-    width: 0px;
-    height: 100vh;
-    border-top: 1px solid #eee;
-    border-right: 1px solid #eee;
-    background-color: #f8f9fa;
-    flex-shrink: 0;
-    overflow: hidden;
-    transition: width .5s;
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
-.sidebar .nav {
-	margin-bottom: 0px;
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
-.sidebar .nav-item {
-	width: 100%;
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
 }
 
-.sidebar .nav-item {
-	margin-left: 0;
+@keyframes popIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    70% {
+        opacity: 1;
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
 }
 
-.sidebar .nav-link {
-	border-radius: 0;
+.animate-hero-text {
+    animation: fadeInUp 0.8s ease-out forwards;
+    opacity: 0; /* Start hidden */
 }
 
-.sidebar ul li:hover a, .menu ul li.active a{
-    color: #777777;
+.animate-hero-buttons {
+    animation: fadeInUp 0.8s ease-out forwards;
+    animation-delay: 0.3s; /* Delay for buttons */
+    opacity: 0; /* Start hidden */
 }
 
-.sidebar ul{
-    list-style: none;
-    padding: 10px 0px;
+.animate-on-scroll {
+    opacity: 0;
+    transition: opacity 0.8s ease-out; /* Only opacity transition by default */
 }
 
-.sidebar ul li a{
-    display: block;
-    color:#1a1a1a;
-    padding: 10px 15px;
-    white-space: nowrap;
+.animate-on-scroll.slide-in-left {
+    transform: translateX(-50px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out; /* Add transform transition for sliding elements */
 }
 
-.sidebar.sidebar-open {
-    width: 300px;
+.animate-on-scroll.slide-in-right {
+    transform: translateX(50px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out; /* Add transform transition for sliding elements */
 }
 
-/*
- * nav-pills home
- */
-.nav-pills .nav-link.active, .nav-pills .show>.nav-link {
-	color: #fff;
-	background-color: #1e94d2;
+.animate-on-scroll.pop-in {
+    transform: scale(0.8); /* Start smaller */
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
 }
 
-/*
- * toogle do navbar do menu
- */
-
-.navbar-toggle {
-    display: inline-block;
-    margin-left: 10px;
+.animate-on-scroll.is-visible {
+    opacity: 1;
+    transform: translateX(0) scale(1);
 }
 
-/*
- * Footer
- */
-.layout-footer {
-	position: fixed;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	margin: 0;
-	height: 50px;
-	border-top: 1px solid #eeeeee;
-}
-
-.footer-copy {
-	font-size: 92%;
-	display: block;
-	color: #777777;
-	text-align: center;
-}
+/* Specific delays for staggered animations */
+.animate-delay-100 { animation-delay: 0.1s; }
+.animate-delay-200 { animation-delay: 0.2s; }
+.animate-delay-300 { animation-delay: 0.3s; }
+.animate-delay-400 { animation-delay: 0.4s; }
+.animate-delay-500 { animation-delay: 0.5s; }
+.animate-delay-600 { animation-delay: 0.6s; }
