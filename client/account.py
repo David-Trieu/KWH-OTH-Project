@@ -3,6 +3,7 @@ import sys
 sys.path.append('/Users/Jonny/Downloads/KWH-OTH/KWH-OTH-Project')
 from Blockchain.backend.core.EllepticCurve.EllepticCurve import Sha256Point, BASE58_ALPHABET
 from Blockchain.backend.util.util import hash160, hash256
+from Blockchain.backend.core.database.database import AccountDB
 import secrets
 
 
@@ -13,8 +14,8 @@ class account:
 
         G = Sha256Point(Gx, Gy)
 
-        privateKey = secrets.randbits(256)
-        unCompressedPublicKey = privateKey * G
+        self.privateKey = secrets.randbits(256)
+        unCompressedPublicKey = self.privateKey * G
         xpoint= unCompressedPublicKey.x
         ypoint = unCompressedPublicKey.y
 
@@ -52,10 +53,10 @@ class account:
             num, mod = divmod(num, 58)
             result = BASE58_ALPHABET[mod] + result
 
-        PublicAddress = prefix + result
+        self.PublicAddress = prefix + result
 
-        print(f"Private Key {privateKey}")
-        print(f"Public Key {PublicAddress}")
+        print(f"Private Key {self.privateKey}")
+        print(f"Public Key {self.PublicAddress}")
         print(f"Xpoint {xpoint} \n Ypoint {ypoint}")
 
 
@@ -63,3 +64,4 @@ class account:
 if __name__ == "__main__":
     acct = account()
     acct.createKeys()
+    AccountDB().write([acct.__dict__])
