@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -7,11 +8,13 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="static/css/style.css">
     <!-- Visualization & Content Choices:
         - Hero: Goal: Attract & Inform. Method: Large headline, brief intro, CTA. Interaction: Button click. Justification: Standard effective landing page practice.
         - Einleitung: Goal: Explain Core Problem & Solution. Method: Text blocks. Interaction: None. Justification: Foundational information from whitepaper's intro.
         - KWH-Coin Ökosystem: Goal: Detail project structure & roles. Method: Text blocks with sub-sections for Stakeholders, Tokenomics & Generation, Platform. Interaction: None. Justification: Comprehensive overview of the system.
         - Technische Konzeption: Goal: Detail underlying technology. Method: Text blocks with sub-sections for Blockchain Architecture, Programming. Interaction: None. Justification: Essential for technical understanding.
+        - Proof-of-Generation: Goal: Explain the core KWH-Coin generation mechanism. Method: Title, intro text, 3-card layout for key aspects. Interaction: None. Justification: Crucial for understanding coin's value proposition.
         - Vorteile & Anwendungsfälle: Goal: Highlight benefits and practical uses. Method: Text lists. Interaction: None. Justification: Showcases value proposition.
         - Tokenomics: Goal: Illustrate Distribution (conceptual). Method: Chart.js Donut Chart. Interaction: Hover for tooltips. Justification: Visual representation is clearer for distribution data. Library: Chart.js.
         - Roadmap: Goal: Show Future Plans. Method: Styled HTML list (timeline-like) with updated phases. Interaction: None. Justification: Clear, chronological display of project progress.
@@ -19,206 +22,6 @@
         - FAQ: Goal: Address Common Queries. Method: Expandable items (JS toggle). Interaction: Click to expand/collapse. Justification: Saves space, user-controlled detail.
         - CONFIRMATION: NO SVG graphics used. NO Mermaid JS used.
     -->
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #F8F9FA; /* Warm Neutral Background */
-            color: #212529; /* Dark Gray Text */
-        }
-        .hero-gradient {
-            background: linear-gradient(135deg, #096f84 0%, #075f72 100%); /* Teal Accent Gradient */
-            background-size: 200% 200%; /* For gradient animation */
-            animation: gradientAnimation 10s ease infinite alternate; /* Apply gradient animation */
-        }
-        .section-title {
-            font-size: 2.25rem; /* 36px */
-            font-weight: 600;
-            margin-bottom: 1.5rem; /* 24px */
-            color: #096f84; /* Teal Accent */
-        }
-        .nav-link {
-            transition: color 0.3s ease;
-        }
-        .nav-link:hover {
-            color: #096f84; /* Teal Accent */
-        }
-        .cta-button {
-            background-color: #096f84; /* Teal Accent */
-            color: white;
-            transition: background-color 0.3s ease, transform 0.2s ease; /* Add transform for scale */
-        }
-        .cta-button:hover {
-            background-color: #075f72; /* Darker Teal */
-            transform: scale(1.05); /* Slightly scale up on hover */
-        }
-        .secondary-cta-button {
-            border-color: #096f84; /* Teal Accent */
-            color: #096f84; /* Teal Accent */
-            transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease; /* Add transform for scale */
-        }
-        .secondary-cta-button:hover {
-            background-color: #096f84; /* Teal Accent */
-            color: white;
-            transform: scale(1.05); /* Slightly scale up on hover */
-        }
-        .card {
-            background-color: white;
-            border-radius: 0.75rem; /* 12px */
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            padding: 1.5rem; /* 24px */
-            transition: all 0.3s ease; /* For hover effects */
-        }
-        .card:hover {
-            transform: translateY(-5px) scale(1.01); /* Lift and slightly scale up */
-            box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.15), 0 5px 10px -5px rgba(0, 0, 0, 0.08); /* Stronger shadow */
-        }
-        .faq-item summary {
-            cursor: pointer;
-            font-weight: 500;
-            color: #096f84;
-        }
-        .faq-item summary::-webkit-details-marker {
-            display: none;
-        }
-        .faq-item summary::after {
-            content: '+';
-            float: right;
-            font-size: 1.5em;
-            line-height: 1;
-            transition: transform 0.3s ease;
-        }
-        .faq-item[open] summary::after {
-            transform: rotate(45deg);
-        }
-        .chart-container {
-            position: relative;
-            width: 100%;
-            max-width: 400px; /* Max width for donut chart */
-            margin-left: auto;
-            margin-right: auto;
-            height: 300px; /* Base height */
-            max-height: 350px; /* Max height */
-        }
-        @media (min-width: 768px) {
-            .chart-container {
-                height: 350px;
-                max-height: 400px;
-            }
-        }
-        /* Custom scrollbar for a more modern look - optional */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #096f84; /* Teal Accent */
-            border-radius: 10px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #075f72; /* Darker Teal */
-        }
-
-        /* Animations */
-        @keyframes gradientAnimation {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes slideInLeft {
-            from {
-                opacity: 0;
-                transform: translateX(-50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        @keyframes slideInRight {
-            from {
-                opacity: 0;
-                transform: translateX(50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        @keyframes popIn {
-            0% {
-                opacity: 0;
-                transform: scale(0.8);
-            }
-            70% {
-                opacity: 1;
-                transform: scale(1.05);
-            }
-            100% {
-                transform: scale(1);
-            }
-        }
-
-        .animate-hero-text {
-            animation: fadeInUp 0.8s ease-out forwards;
-            opacity: 0; /* Start hidden */
-        }
-
-        .animate-hero-buttons {
-            animation: fadeInUp 0.8s ease-out forwards;
-            animation-delay: 0.3s; /* Delay for buttons */
-            opacity: 0; /* Start hidden */
-        }
-
-        .animate-on-scroll {
-            opacity: 0;
-            transition: opacity 0.8s ease-out; /* Only opacity transition by default */
-        }
-
-        .animate-on-scroll.slide-in-left {
-            transform: translateX(-50px);
-            transition: opacity 0.8s ease-out, transform 0.8s ease-out; /* Add transform transition for sliding elements */
-        }
-
-        .animate-on-scroll.slide-in-right {
-            transform: translateX(50px);
-            transition: opacity 0.8s ease-out, transform 0.8s ease-out; /* Add transform transition for sliding elements */
-        }
-
-        .animate-on-scroll.pop-in {
-            transform: scale(0.8); /* Start smaller */
-            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
-        }
-
-        .animate-on-scroll.is-visible {
-            opacity: 1;
-            transform: translateX(0) scale(1);
-        }
-
-        /* Specific delays for staggered animations */
-        .animate-delay-100 { animation-delay: 0.1s; }
-        .animate-delay-200 { animation-delay: 0.2s; }
-        .animate-delay-300 { animation-delay: 0.3s; }
-        .animate-delay-400 { animation-delay: 0.4s; }
-        .animate-delay-500 { animation-delay: 0.5s; }
-        .animate-delay-600 { animation-delay: 0.6s; }
-    </style>
 </head>
 <body class="antialiased">
 
@@ -226,12 +29,13 @@
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <div class="flex-shrink-0">
-                    <a href="#" class="text-2xl font-bold text-[#096f84]">KWH<span class="text-[#212529]">Coin</span></a>
+                    <a href="./index.html" class="text-2xl font-bold text-[#096f84]">KWH<span class="text-[#212529]">Coin</span></a>
                 </div>
                 <nav class="hidden md:flex space-x-6">
                     <a href="#einleitung" class="nav-link text-gray-700 hover:text-[#096f84] font-medium">Einleitung</a>
                     <a href="#oekosystem" class="nav-link text-gray-700 hover:text-[#096f84] font-medium">Ökosystem</a>
                     <a href="#technik" class="nav-link text-gray-700 hover:text-[#096f84] font-medium">Technik</a>
+                    <a href="#proof-of-generation" class="nav-link text-gray-700 hover:text-[#096f84] font-medium">PoG</a>
                     <a href="#vorteile" class="nav-link text-gray-700 hover:text-[#096f84] font-medium">Vorteile</a>
                     <a href="#tokenomics" class="nav-link text-gray-700 hover:text-[#096f84] font-medium">Tokenomics</a>
                     <a href="#roadmap" class="nav-link text-gray-700 hover:text-[#096f84] font-medium">Roadmap</a>
@@ -249,6 +53,7 @@
             <a href="#einleitung" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-[#096f84]">Einleitung</a>
             <a href="#oekosystem" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-[#096f84]">Ökosystem</a>
             <a href="#technik" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-[#096f84]">Technik</a>
+            <a href="#proof-of-generation" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-[#096f84]">PoG</a>
             <a href="#vorteile" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-[#096f84]">Vorteile</a>
             <a href="#tokenomics" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-[#096f84]">Tokenomics</a>
             <a href="#roadmap" class="block px-4 py-2 text-gray-700 hover:bg-gray-100 hover:text-[#096f84]">Roadmap</a>
@@ -266,8 +71,9 @@
                 <p class="text-lg sm:text-xl md:text-2xl mb-10 max-w-3xl mx-auto text-gray-200 animate-hero-text">
                     Entdecken Sie eine dezentralisierte Zukunft für Energiehandel und -management, basierend auf Transparenz und Effizienz.
                 </p>
-                <div class="animate-hero-buttons">
-                    <a href="#einleitung" class="cta-button text-lg font-semibold py-3 px-8 rounded-lg shadow-md inline-block mr-4 mb-4 sm:mb-0">Mehr erfahren</a>
+                <div class="animate-hero-buttons flex flex-col sm:flex-row justify-center items-center sm:space-x-4">
+                    <a href="#einleitung" class="cta-button text-lg font-semibold py-3 px-8 rounded-lg shadow-md inline-block mb-4 sm:mb-0">Mehr erfahren</a>
+                    <a href="/wallet" class="secondary-cta-button bg-white text-lg font-semibold py-3 px-8 rounded-lg shadow-md inline-block border-2 border-white hover:bg-transparent hover:text-white mb-4 sm:mb-0">Mein Wallet</a>
                     <a href="#kaufen" class="secondary-cta-button bg-white text-lg font-semibold py-3 px-8 rounded-lg shadow-md inline-block border-2 border-white hover:bg-transparent hover:text-white">KWH Kaufen (Anleitung)</a>
                 </div>
             </div>
@@ -394,6 +200,32 @@
             </div>
         </section>
 
+        <section id="proof-of-generation" class="py-16 md:py-24 bg-gray-50">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="section-title text-center animate-on-scroll pop-in">Proof-of-Generation (PoG): Das Herzstück von KWH-Coin</h2>
+                <p class="text-lg text-gray-700 mb-12 max-w-3xl mx-auto text-center animate-on-scroll pop-in">
+                    Proof-of-Generation ist der innovative Mechanismus, der sicherstellt, dass jeder KWH-Coin durch reale, erzeugte Energie gedeckt ist. Dieser Ansatz verbindet die digitale Welt der Kryptowährungen direkt mit der physischen Welt der Energieerzeugung, schafft Transparenz und einen intrinsischen Wert für jeden Coin. Erfahren Sie, wie PoG funktioniert und warum es KWH-Coin einzigartig macht.
+                </p>
+                <div class="grid md:grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="card text-center animate-on-scroll pop-in animate-delay-100">
+                        <div class="text-4xl mb-4 text-[#096f84]">⚡️</div>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Das Kernprinzip: Energie als Basis</h3>
+                        <p class="text-gray-600">Jeder KWH-Coin wird durch den verifizierten Einsatz von ungefähr einer Kilowattstunde (kWh) elektrischer Energie erzeugt. Dies schafft eine direkte Verbindung zwischen dem digitalen Coin und einem realen Energiewert, wodurch Spekulation eingedämmt und ein stabilerer Wert gefördert wird.</p>
+                    </div>
+                    <div class="card text-center animate-on-scroll pop-in animate-delay-200">
+                        <div class="text-4xl mb-4 text-[#096f84]">🔗</div>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Validierung: Vertrauen durch Nachweis</h3>
+                        <p class="text-gray-600">Die Energieerzeugung wird durch zertifizierte Smart Meter und dezentrale Oracle-Systeme verifiziert. Diese Systeme übermitteln manipulationssichere Daten an die Blockchain, die den Erzeugungsnachweis fälschungssicher dokumentieren und als Basis für das Mining neuer KWH-Coins dienen.</p>
+                    </div>
+                    <div class="card text-center animate-on-scroll pop-in animate-delay-300">
+                        <div class="text-4xl mb-4 text-[#096f84]">💡</div>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2">Vorteile: Transparenz und realer Nutzen</h3>
+                        <p class="text-gray-600">PoG verhindert die Erzeugung ungedeckter Coins, gewährleistet volle Transparenz über die Coin-Entstehung und koppelt den Wert von KWH-Coin an einen fundamentalen wirtschaftlichen Faktor – Energie. Dies fördert das Vertrauen und die Akzeptanz im Ökosystem.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <section id="vorteile" class="py-16 md:py-24 bg-white">
             <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                 <h2 class="section-title text-center">Vorteile und Anwendungsfälle</h2>
@@ -476,7 +308,7 @@
                         <p class="text-gray-600">Ermöglicht Peer-to-Peer-Energietransaktionen ohne zentrale Zwischenhändler.</p>
                     </div>
                     <div class="card text-center animate-on-scroll pop-in animate-delay-200">
-                        <div class="text-4xl mb-4 text-[#096f84]"> contratos</div>
+                        <div class="text-4xl mb-4 text-[#096f84]">📄</div> <!-- Changed emoji to something more generic for "contracts" -->
                         <h3 class="text-xl font-semibold text-gray-800 mb-2">Smart Contracts</h3>
                         <p class="text-gray-600">Automatisieren Vereinbarungen und Zahlungen, erhöhen Transparenz und Effizienz.</p>
                     </div>
@@ -718,7 +550,7 @@
                     <details class="faq-item card p-0 animate-on-scroll pop-in animate-delay-500">
                         <summary class="p-6 text-lg">Was ist Proof-of-Generation (PoG)?</summary>
                         <div class="p-6 pt-0 text-gray-600">
-                            Proof-of-Generation (PoG) ist der Mechanismus, durch den KWH-Coins erzeugt werden. Er erfordert den Nachweis der Erzeugung von ca. 1 kWh elektrischer Energie, typischerweise durch zertifizierte Messgeräte und Oracles.
+                            Proof-of-Generation (PoG) ist der Mechanismus, durch den KWH-Coins erzeugt werden. Er erfordert den Nachweis der Erzeugung von ca. 1 kWh elektrischer Energie, typischerweise durch zertifizierte Messgeräte und Oracles. Dieser Mechanismus ist im Detail im Abschnitt "Proof-of-Generation (PoG)" beschrieben.
                         </div>
                     </details>
                     <details class="faq-item card p-0 animate-on-scroll pop-in animate-delay-600">
@@ -745,11 +577,13 @@
                         <li><a href="#einleitung" class="hover:text-white">Einleitung</a></li>
                         <li><a href="#oekosystem" class="hover:text-white">Ökosystem</a></li>
                         <li><a href="#technik" class="hover:text-white">Technik</a></li>
+                        <li><a href="#proof-of-generation" class="hover:text-white">PoG</a></li>
                         <li><a href="#vorteile" class="hover:text-white">Vorteile</a></li>
                         <li><a href="#tokenomics" class="hover:text-white">Tokenomics</a></li>
                         <li><a href="#roadmap" class="hover:text-white">Roadmap</a></li>
                         <li><a href="#team" class="hover:text-white">Team</a></li>
                         <li><a href="#faq" class="hover:text-white">FAQ</a></li>
+                        <li><a href="./wallet.html" class="hover:text-white">Wallet</a></li>
                     </ul>
                 </div>
                 <div>
@@ -785,20 +619,33 @@
             }
 
             // Smooth Scrolling for Navigation Links
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            document.querySelectorAll('a[href^="#"], a[href^="./index.html#"]').forEach(anchor => {
                 anchor.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    const targetId = this.getAttribute('href');
-                    const targetElement = document.querySelector(targetId);
-                    if (targetElement) {
-                        targetElement.scrollIntoView({
-                            behavior: 'smooth'
-                        });
-                        // Close mobile menu after click
-                        if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
-                           mobileMenu.classList.add('hidden');
+                    const href = this.getAttribute('href');
+                    // Check if it's an internal anchor link on the current page or index.html
+                    if (href.startsWith('#') || (href.startsWith('./index.html#') && window.location.pathname.endsWith('index.html')) ) {
+                        e.preventDefault();
+
+                        let targetId;
+                        if (href.startsWith('#')) {
+                            targetId = href;
+                        } else { // For ./index.html#section links when already on index.html
+                            targetId = '#' + href.split('#')[1];
+                        }
+
+                        const targetElement = document.querySelector(targetId);
+                        if (targetElement) {
+                            targetElement.scrollIntoView({
+                                behavior: 'smooth'
+                            });
+                            // Close mobile menu after click
+                            if (mobileMenu && !mobileMenu.classList.contains('hidden')) {
+                               mobileMenu.classList.add('hidden');
+                            }
                         }
                     }
+                    // For links to other pages (like ./wallet.html), or ./index.html#section from wallet.html,
+                    // the default browser navigation will take place.
                 });
             });
 
@@ -872,9 +719,14 @@
             }
 
             // Initial animations for hero section
-            document.querySelector('#hero h1').classList.add('animate-hero-text');
-            document.querySelector('#hero p').classList.add('animate-hero-text');
-            document.querySelector('#hero > div > div:last-child').classList.add('animate-hero-buttons'); // Select the div containing the buttons
+            const heroH1 = document.querySelector('#hero h1');
+            const heroP = document.querySelector('#hero p.text-lg'); // More specific selector
+            const heroButtons = document.querySelector('#hero .animate-hero-buttons');
+
+            if (heroH1) heroH1.classList.add('animate-hero-text');
+            if (heroP) heroP.classList.add('animate-hero-text');
+            if (heroButtons) heroButtons.classList.add('animate-hero-buttons');
+
 
             // Intersection Observer for scroll animations
             const animateOnScrollElements = document.querySelectorAll('.animate-on-scroll');
@@ -891,7 +743,10 @@
                         entry.target.classList.add('is-visible');
                         // If it's a roadmap item, also animate its circle
                         if (entry.target.closest('#roadmap') && entry.target.querySelector('.hidden.md\\:block.absolute.w-4.h-4.rounded-full.border-2.border-white')) {
-                            entry.target.querySelector('.hidden.md\\:block.absolute.w-4.h-4.rounded-full.border-2.border-white').style.animation = 'popIn 0.8s ease-out forwards';
+                            const circle = entry.target.querySelector('.hidden.md\\:block.absolute.w-4.h-4.rounded-full.border-2.border-white');
+                            if (circle) { // Check if circle exists before trying to animate
+                                circle.style.animation = 'popIn 0.8s ease-out forwards';
+                            }
                         }
                         observer.unobserve(entry.target); // Stop observing once animated
                     }
