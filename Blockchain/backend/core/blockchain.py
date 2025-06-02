@@ -14,7 +14,7 @@ VERSION = 1
 
 class Blockchain:
     def __init__(self):
-        self.GenesisBlock()
+        pass
 
     def safeInDB(self,block):
         db = BlockchainDB()
@@ -33,16 +33,18 @@ class Blockchain:
         timestamp = int(time.time())
         coinbaseInstance = CoinbaseTx(BlockHeight)
         coinbaseTx = coinbaseInstance.CoinbaseTransaction()
-
-
-        merkleRoot = ' '
+        merkleRoot = coinbaseTx.TxId
         bits = 'ffff001f'
         blockHeader = BlockHeader(VERSION, prevBlockHash, merkleRoot, timestamp, bits)
         blockHeader.mine()
+        print(f"Block Height {BlockHeight} mined successfully with Nonce value of {blockHeader.nonce}")
         self.safeInDB([Block(BlockHeight,1,blockHeader.__dict__,1,coinbaseTx.to_dict()).__dict__])
 
     def main(self):
-        for i in range(4):
+        lastBlock = self.getLastBlock()
+        if lastBlock is None:
+            self.GenesisBlock()
+        while True:
             lastBlock = self.getLastBlock()
             BlockHeight = lastBlock["Height"] + 1
             prevBlockHash = lastBlock['BlockHeader']["blockHash"]
