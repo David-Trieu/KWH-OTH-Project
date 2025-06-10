@@ -3,7 +3,7 @@ sys.path.append('/Users/David/Desktop/KWH-OTH-Project')
 
 from Blockchain.backend.core.block import Block
 from Blockchain.backend.core.blockheader import BlockHeader
-from Blockchain.backend.util.util import hash256
+from Blockchain.backend.util.util import hash256, merkle_root
 from Blockchain.backend.core.database.database import BlockchainDB
 from Blockchain.backend.core.Tx import CoinbaseTx
 from multiprocessing import Process, Manager
@@ -41,7 +41,7 @@ class Blockchain:
         self.addTransactionsInBlock = []
 
         for tx in self.MemPool:
-            self.TxIds.append(tx)
+            self.TxIds.append(bytes.fromhex(tx))
             self.addTransactionsInBlock.append(self.MemPool[tx])
 
     def convert_to_json(self):
@@ -55,10 +55,10 @@ class Blockchain:
         coinbaseInstance = CoinbaseTx(BlockHeight)
         coinbaseTx = coinbaseInstance.CoinbaseTransaction()
 
-        self.TxIds.insert(0,coinbaseTx.TxId)
+        self.TxIds.insert(0,bytes.fromhex(coinbaseTx.TxId))
         self.addTransactionsInBlock.insert(0,coinbaseTx)
 
-        merkleRoot = coinbaseTx.TxId
+        merkleRoot = merkle_root(self.TxIds)[::-1].hex()
         bits = 'ffff001f'
         blockHeader = BlockHeader(VERSION, prevBlockHash, merkleRoot, timestamp, bits)
         blockHeader.mine()
