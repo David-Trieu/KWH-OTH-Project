@@ -110,7 +110,7 @@ class Tx:
 
         for tx_index, tx_in in enumerate(self.tx_ins):
             if self.is_coinbase():
-                tx_in.script_sig.cmd[0] = little_endian_to_int(tx_in.script_sig.cmd[0])
+                tx_in.script_sig.cmds[0] = little_endian_to_int(tx_in.script_sig.cmds[0])
 
             tx_in.prev_tx = tx_in.prev_tx.hex()
 
