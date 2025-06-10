@@ -2,10 +2,10 @@ from Blockchain.backend.core.Script import Script
 from Blockchain.backend.util.util import int_to_little_endian, bytes_needed, decode_base58, little_endian_to_int,encode_varint,hash256
 
 ZERO_HASH = b'\0' * 32
-REWARD = 1
+REWARD = 50
 
-PRIVATE_KEY = '40130474439181771711690280932034832030799782940534794097352823852457815440129'
-MINER_ADDRESS = '1XVBtz2yCUqK6igAna2pLficzgDEYBDCm'
+PRIVATE_KEY = '48193883354678373310384789638833730691026922349095996900916740842334379620790'
+MINER_ADDRESS = '1LWxEfevJUFv73hVGmqJ72ZwfqYv1GzMUk'
 SIGHASH_ALL = 1
 
 class CoinbaseTx:
@@ -24,7 +24,7 @@ class CoinbaseTx:
         target_amount = REWARD * 1000
         target_h160 = decode_base58(MINER_ADDRESS)
         target_script = Script.p2pkh_script(target_h160)
-        tx_outs.append(TxOut(target_amount, target_script))
+        tx_outs.append(TxOut(amount = target_amount, script_pubkey = target_script))
         coinBaseTx = Tx(1, tx_ins, tx_outs, 0)
         coinBaseTx.TxId = coinBaseTx.id()
 
