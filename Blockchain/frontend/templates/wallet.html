@@ -48,23 +48,32 @@
         <section id="send-kwh" class="mb-12 animate-on-scroll pop-in animate-delay-200">
             <div class="card max-w-lg mx-auto">
                 <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">KWH-Coins Senden</h2>
-                <form id="send-kwh-form" class="space-y-6">
+                <form id="form" class="space-y-6" method="POST">
                     <div>
-                        <label for="recipient-address" class="block text-sm font-medium text-gray-700 mb-1">Empfängeradresse</label>
-                        <input type="text" id="recipient-address" name="recipient-address" required
-                               aria-describedby="recipient-address-help"
+                        <label for="fromAddress" class="block text-sm font-medium text-gray-700 mb-1">Senderadresse</label>
+                        <input type="text" id="fromAddress" name="fromAddress" required
+                               aria-describedby="fromAddress-help"
                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#096f84] focus:border-transparent transition-colors"
                                placeholder="0x...">
-                        <p id="recipient-address-help" class="mt-1 text-xs text-gray-500">Geben Sie die Wallet-Adresse des Empfängers ein.</p>
+                        <p id="fromAddress-help" class="mt-1 text-xs text-gray-500">Geben Sie die Wallet-Adresse des Senders ein.</p>
                     </div>
                     <div>
-                        <label for="amount" class="block text-sm font-medium text-gray-700 mb-1">Betrag (KWH)</label>
-                        <input type="number" id="amount" name="amount" step="any" min="0.000001" required
-                               aria-describedby="amount-help"
+                        <label for="toAddress" class="block text-sm font-medium text-gray-700 mb-1">Empfängeradresse</label>
+                        <input type="text" id="toAddress" name="toAddress" required
+                               aria-describedby="toAddress-help"
+                               class="w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#096f84] focus:border-transparent transition-colors"
+                               placeholder="0x...">
+                        <p id="toAddress-help" class="mt-1 text-xs text-gray-500">Geben Sie die Wallet-Adresse des Empfängers ein.</p>
+                    </div>
+                    <div>
+                        <label for="Amount" class="block text-sm font-medium text-gray-700 mb-1">Betrag (KWH)</label>
+                        <input type="number" id="Amount" name="Amount" step="any" min="0.000001" required
+                               aria-describedby="Amount-help"
                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#096f84] focus:border-transparent transition-colors"
                                placeholder="100.00">
-                        <p id="amount-help" class="mt-1 text-xs text-gray-500">Geben Sie den zu sendenden Betrag ein.</p>
+                        <p id="Amount-help" class="mt-1 text-xs text-gray-500">Geben Sie den zu sendenden Betrag ein.</p>
                     </div>
+                    <span> {{ message }}</span> <br>
                     <button type="submit" class="w-full cta-button text-lg font-semibold py-3 px-8 rounded-lg shadow-md flex items-center justify-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                           <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 16.571V11.69l-4 1.142a1 1 0 00-.895 1.076l.5 4A1 1 0 006 19h8a1 1 0 00.895-1.429l.5-4a1 1 0 00-.895-1.076l-4-1.142V16.57a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
