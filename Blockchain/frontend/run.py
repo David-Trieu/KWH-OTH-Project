@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request
 
 from client.sendKWH import SendKWH
+from Blockchain.backend.core.Tx import Tx
 
 app = Flask(__name__)
 
@@ -19,13 +20,29 @@ def wallet():
         ToAddress = request.form.get('toAddress')
         Amount = request.form.get('Amount', type = int)
         sendCoin = SendKWH(FromAddress, ToAddress, Amount, UTXOS)
+        TxObj = sendCoin.prepareTransaction()
 
-        if not sendCoin.prepareTransaction():
-            message = "Insufficient Balance"
+        scriptPubKey = sendCoin.scriptPubKey(FromAddress)
+        verified = True
+
+        if not TxObj:
+            message= "Invalid Transaction"
+
+        if isinstance(TxObj, Tx):
+            for index, tx in enumerate(TxObj.tx_ins):
+                if not TxObj.verify_input(index, scriptPubKey):
+                    verified = False
+
+            if verified:
+                MEMPOOL[TxObj.TxId] = TxObj
+                message = "Transaction added in MemoryPool"
+
     return render_template('wallet.html', message = message)
 
 
-def main(utxos):
+def main(utxos, MemPool):
     global UTXOS
+    global MEMPOOL
     UTXOS = utxos
+    MEMPOOL = MemPool
     app.run()
