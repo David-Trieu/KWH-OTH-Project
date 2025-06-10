@@ -83,7 +83,8 @@ class SendKWH:
         if self.isBalanceEnough:
             self.TxOuts = self.prepareTxOut()
             self.TxObj = Tx(1, self.TxIns, self.TxOuts, 0)
+            self.TxObj.TxId = self.TxObj.id()
             self.signTx()
-            return True
+            return self.TxObj
         else:
             return False
