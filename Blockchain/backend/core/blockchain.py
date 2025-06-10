@@ -35,17 +35,38 @@ class Blockchain:
     def store_uxtos_in_cache(self, Transaction):
         self.utxos[Transaction.TxId] = Transaction
 
+    def read_transaction_from_memorypool(self):
+        self.TxIds = []
+        self.addTransactionsInBlock = []
+
+        for tx in self.MemPool:
+            self.TxIds.append(tx)
+            self.addTransactionsInBlock.append(self.MemPool[tx])
+
+    def convert_to_json(self):
+        self.TxJson = []
+        for tx in self.addTransactionsInBlock:
+            self.TxJson.append(tx.to_dict())
+
     def addBlock(self, BlockHeight,prevBlockHash):
+        self.read_transaction_from_memorypool()
         timestamp = int(time.time())
         coinbaseInstance = CoinbaseTx(BlockHeight)
         coinbaseTx = coinbaseInstance.CoinbaseTransaction()
+
+        self.TxIds.insert(0,coinbaseTx.TxId)
+        self.addTransactionsInBlock.insert(0,coinbaseTx)
+
         merkleRoot = coinbaseTx.TxId
         bits = 'ffff001f'
         blockHeader = BlockHeader(VERSION, prevBlockHash, merkleRoot, timestamp, bits)
         blockHeader.mine()
+
         self.store_uxtos_in_cache(coinbaseTx)
+        self.convert_to_json()
+
         print(f"Block Height {BlockHeight} mined successfully with Nonce value of {blockHeader.nonce}")
-        self.safeInDB([Block(BlockHeight,1,blockHeader.__dict__,1,coinbaseTx.to_dict()).__dict__])
+        self.safeInDB([Block(BlockHeight,1,blockHeader.__dict__,1,self.TxJson).__dict__])
 
     def main(self):
         lastBlock = self.getLastBlock()
