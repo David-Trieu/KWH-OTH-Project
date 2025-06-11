@@ -61,7 +61,7 @@ class Blockchain:
         for tx in self.MemPool:
             self.TxIds.append(bytes.fromhex(tx))
             self.addTransactionsInBlock.append(self.MemPool[tx])
-            self.Blocksize += len(self.MemPool[tx].serialize())
+            self.Blocksize += len(self.MemPool[tx].serialize()) #add transactions to blocksize
 
             for spent in self.MemPool[tx].tx_ins:
                 self.remove_spent_transactions.append([spent.prev_tx, spent.prev_index])
@@ -98,7 +98,7 @@ class Blockchain:
         timestamp = int(time.time())
         coinbaseInstance = CoinbaseTx(BlockHeight)
         coinbaseTx = coinbaseInstance.CoinbaseTransaction()
-        self.Blocksize += len(coinbaseTx.serialize())
+        self.Blocksize += len(coinbaseTx.serialize()) #add coinbasetx to blocksize
 
         coinbaseTx.tx_outs[0].amount = coinbaseTx.tx_outs[0].amount + self.fee
 
@@ -115,7 +115,7 @@ class Blockchain:
         self.convert_to_json()
 
         print(f"Block Height {BlockHeight} mined successfully with Nonce value of {blockHeader.nonce}")
-        self.safeInDB([Block(BlockHeight,self.Blocksize,blockHeader.__dict__,1,self.TxJson).__dict__])
+        self.safeInDB([Block(BlockHeight,self.Blocksize,blockHeader.__dict__,1,self.TxJson).__dict__]) 
 
     def main(self):
         lastBlock = self.getLastBlock()
