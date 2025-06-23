@@ -18,7 +18,7 @@
                     <a href="/" class="text-2xl font-bold text-[#096f84]">KWH<span class="text-[#212529]">Coin</span></a>
                 </div>
                 <nav>
-                     <a href="/" class="nav-link text-gray-700 hover:text-[#096f84] font-medium">Zur Hauptseite</a>
+                     <a href="/logout" class="nav-link text-gray-700 hover:text-[#096f84] font-medium">Logout</a>
                 </nav>
             </div>
         </div>
@@ -26,6 +26,15 @@
 
     <main class="pt-24 container mx-auto px-4 sm:px-6 lg:px-8">
         <h1 class="section-title text-center mb-12">Mein KWH-Coin Wallet</h1>
+
+        <section id="wallet-address" class="mb-12 animate-on-scroll pop-in">
+            <div class="card max-w-md mx-auto text-center">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-3">Meine Adresse</h2>
+                <div class="flex items-center justify-center text-[#096f84] mb-2">
+                    <p class="text font-bold"> {{ session['myAccount'] }}</p>
+                </div>
+            </div>
+        </section>
 
         <!-- Wallet Balance -->
         <section id="wallet-balance" class="mb-12 animate-on-scroll pop-in">
@@ -35,7 +44,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mr-2" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" />
                     </svg>
-                    <p class="text-4xl font-bold">1.234,56 <span class="text-2xl font-medium">KWH</span></p>
+                    <p class="text-4xl font-bold">{{ balance }} <span class="text-2xl font-medium">KWH</span></p>
                 </div>
                 <p class="text-sm text-gray-500 mt-1">Ihr aktuelles Guthaben an KWH-Coins.</p>
                 <div class="mt-4">
@@ -49,14 +58,14 @@
             <div class="card max-w-lg mx-auto">
                 <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">KWH-Coins Senden</h2>
                 <form id="form" class="space-y-6" method="POST">
-                    <div>
+                    <!--<div>
                         <label for="fromAddress" class="block text-sm font-medium text-gray-700 mb-1">Senderadresse</label>
                         <input type="text" id="fromAddress" name="fromAddress" required
                                aria-describedby="fromAddress-help"
                                class="w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-[#096f84] focus:border-transparent transition-colors"
                                placeholder="0x...">
                         <p id="fromAddress-help" class="mt-1 text-xs text-gray-500">Geben Sie die Wallet-Adresse des Senders ein.</p>
-                    </div>
+                    </div>-->
                     <div>
                         <label for="toAddress" class="block text-sm font-medium text-gray-700 mb-1">Empfängeradresse</label>
                         <input type="text" id="toAddress" name="toAddress" required
