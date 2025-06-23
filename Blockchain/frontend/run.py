@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request, session, redirect, url_for
 
+from client.accountInfo import accountInfo
 from client.sendKWH import SendKWH
 from Blockchain.backend.core.Tx import Tx
 
@@ -37,11 +38,13 @@ def logout():
 def wallet():
     message = ''
     test = session.get('myAccount', None)
+    myacc = accountInfo(test, UTXOS)
+    balance = myacc.getBalance()
     if test is None:
         return redirect(url_for('index'))
     if request.method == 'POST' and test is not None:
         print("test")
-        FromAddress = request.form.get('fromAddress')
+        FromAddress = test
         ToAddress = request.form.get('toAddress')
         Amount = request.form.get('Amount', type = int)
         sendCoin = SendKWH(FromAddress, ToAddress, Amount, UTXOS)
@@ -62,7 +65,7 @@ def wallet():
                 MEMPOOL[TxObj.TxId] = TxObj
                 message = "Transaction added in MemoryPool"
 
-    return render_template('wallet.html', message = message)
+    return render_template('wallet.html', message = message, balance = balance)
 
 
 def main(utxos, MemPool):
