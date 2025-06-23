@@ -71,3 +71,16 @@ def merkle_root(hashes):
         current_level = merkle_parent_level(current_level)
 
     return current_level[0]
+
+def target_to_bits(target):
+
+    raw_bytes = target.to_bytes(32, "big")
+    raw_bytes = raw_bytes.lstrip(b"\x00")
+    if raw_bytes[0] > 0x7F:
+        exponent = len(raw_bytes) + 1
+        coefficient = b"\x00" + raw_bytes[:2]
+    else:
+        exponent = len(raw_bytes)
+        coefficient = raw_bytes[:3]
+    new_bits = coefficient[::-1] + bytes([exponent])
+    return new_bits

@@ -9,8 +9,9 @@ class SendKWH:
         self.COIN = 1000
         self.FromPublicAddress = fromAccount
         self.toAccount = toAccount
-        self.Amount = Amount
+        self.Amount = Amount * self.COIN
         self.utxos = UTXOS
+        #self.fee = self.COIN
 
     def scriptPubKey(self, PublicAddress):
         h160 = decode_base58(PublicAddress)
@@ -42,7 +43,7 @@ class SendKWH:
             print(f"Error in voncerting the Managed Dict to Normal Dict")
 
         for Txbyte in newutxos:
-            if self.Total < self.Amount:
+            if self.Total < self.Amount:# + self.fee:
                 TxObj = newutxos[Txbyte]
 
                 for index, txout in enumerate(TxObj.tx_outs):
@@ -55,7 +56,7 @@ class SendKWH:
 
         self.isBalanceEnough = True
 
-        if self.Total < self.Amount:
+        if self.Total < self.Amount:# + self.fee:
             self.isBalanceEnough = False
 
         return TxIns
@@ -67,6 +68,9 @@ class SendKWH:
 
         self.fee = self.COIN #maybe change it to 0?
         self.changeAmount = self.Total - self.Amount - self.fee
+        #print(self.changeAmount)
+        #print(self.Total)
+        #print(self.Amount)
 
         TxOuts.append(TxOut(self.changeAmount, self.from_address_script_pubkey))
         return TxOuts
@@ -83,7 +87,8 @@ class SendKWH:
         if self.isBalanceEnough:
             self.TxOuts = self.prepareTxOut()
             self.TxObj = Tx(1, self.TxIns, self.TxOuts, 0)
+            self.TxObj.TxId = self.TxObj.id()
             self.signTx()
-            return True
+            return self.TxObj
         else:
             return False
