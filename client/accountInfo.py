@@ -186,42 +186,42 @@ class accountInfo:
 
 
 # --- MAIN SCRIPT EXECUTION BLOCK (remains unchanged) ---
+if __name__ == "__main__":
+    BLOCKCHAIN_DATA_FILE = '../data/blockchain'
+    MINER_ADDRESS = '1LWxEfevJUFv73hVGmqJ72ZwfqYv1GzMUk'
 
-BLOCKCHAIN_DATA_FILE = '../data/blockchain'
-MINER_ADDRESS = '1LWxEfevJUFv73hVGmqJ72ZwfqYv1GzMUk'
+    blockchain_data = []
+    print(f"Attempting to load blockchain data from: {BLOCKCHAIN_DATA_FILE}")
+    try:
+        with open(BLOCKCHAIN_DATA_FILE, 'r') as f:
+            blockchain_data = json.load(f)
+        print("Blockchain data loaded successfully.")
+    except FileNotFoundError:
+        print(f"Error: The file '{BLOCKCHAIN_DATA_FILE}' was not found.")
+        print("Please ensure the file exists at the path '../data/blockchain' relative to the script.")
+    except json.JSONDecodeError as e:
+        print(f"Error: Could not decode JSON from '{BLOCKCHAIN_DATA_FILE}'. Please check the file format.")
+        print(f"Details of the JSON decoding error: {e}")
+        print("Ensure the content of the 'blockchain' file is valid JSON (e.g., all keys and strings in double quotes, proper commas).")
+    except Exception as e:
+        print(f"An unexpected error occurred while loading blockchain data: {e}")
 
-blockchain_data = []
-print(f"Attempting to load blockchain data from: {BLOCKCHAIN_DATA_FILE}")
-try:
-    with open(BLOCKCHAIN_DATA_FILE, 'r') as f:
-        blockchain_data = json.load(f)
-    print("Blockchain data loaded successfully.")
-except FileNotFoundError:
-    print(f"Error: The file '{BLOCKCHAIN_DATA_FILE}' was not found.")
-    print("Please ensure the file exists at the path '../data/blockchain' relative to the script.")
-except json.JSONDecodeError as e:
-    print(f"Error: Could not decode JSON from '{BLOCKCHAIN_DATA_FILE}'. Please check the file format.")
-    print(f"Details of the JSON decoding error: {e}")
-    print("Ensure the content of the 'blockchain' file is valid JSON (e.g., all keys and strings in double quotes, proper commas).")
-except Exception as e:
-    print(f"An unexpected error occurred while loading blockchain data: {e}")
+    if blockchain_data:
+        history = get_transaction_history(blockchain_data, MINER_ADDRESS)
 
-if blockchain_data:
-    history = get_transaction_history(blockchain_data, MINER_ADDRESS)
+        if history:
+            print("\n--- Transaction History ---")
+            history.sort(key=lambda x: (x['Block Height'], datetime.datetime.strptime(x['Timestamp'], '%Y-%m-%d %H:%M:%S')))
 
-    if history:
-        print("\n--- Transaction History ---")
-        history.sort(key=lambda x: (x['Block Height'], datetime.datetime.strptime(x['Timestamp'], '%Y-%m-%d %H:%M:%S')))
-
-        for entry in history:
-            print(f"Block: {entry['Block Height']} (Hash: {entry['Block Hash'][:8]}...)")
-            print(f"  TxId: {entry['TxId'][:8]}...")
-            print(f"  Type: {entry['Type']}")
-            print(f"  Amount: {entry['Amount (BTC)']} BTC ({entry['Amount (Satoshi)']} Satoshis)")
-            print(f"  {entry['To/From']}")
-            print(f"  Timestamp: {entry['Timestamp']}")
-            print("-" * 30)
+            for entry in history:
+                print(f"Block: {entry['Block Height']} (Hash: {entry['Block Hash'][:8]}...)")
+                print(f"  TxId: {entry['TxId'][:8]}...")
+                print(f"  Type: {entry['Type']}")
+                print(f"  Amount: {entry['Amount (BTC)']} BTC ({entry['Amount (Satoshi)']} Satoshis)")
+                print(f"  {entry['To/From']}")
+                print(f"  Timestamp: {entry['Timestamp']}")
+                print("-" * 30)
+        else:
+            print(f"\nNo non-coinbase transactions found for address '{MINER_ADDRESS}' in the loaded blockchain data.")
     else:
-        print(f"\nNo non-coinbase transactions found for address '{MINER_ADDRESS}' in the loaded blockchain data.")
-else:
-    print("\nBlockchain data could not be loaded, so no transaction history is available.")
+        print("\nBlockchain data could not be loaded, so no transaction history is available.")
