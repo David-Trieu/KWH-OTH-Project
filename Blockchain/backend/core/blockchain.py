@@ -16,7 +16,7 @@ import datetime
 
 ZERO_HASH = '0' * 64
 VERSION = 1
-INITIAL_TARGET = 0x0000FFFF00000000000000000000000000000000000000000000000000000000
+INITIAL_TARGET = 0x00000FFFF0000000000000000000000000000000000000000000000000000000
 PRICE_MAX = 300  # Oberer Grenzwert für den Strompreis zur Anpassung
 PRICE_MIN = 0  # Unterer Grenzwert für den Strompreis zur Anpassung (Preis kann auch negativ sein, 0 als Safe-Guard)
 
