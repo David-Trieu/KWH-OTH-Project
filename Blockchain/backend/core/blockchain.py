@@ -1,5 +1,10 @@
 import sys
+import time
+import requests
+import datetime
+from multiprocessing import Process, Manager
 
+# Passe diesen Pfad an DEINE Umgebung an!
 sys.path.append('/Users/David/Desktop/KWH-OTH-Project')
 
 from Blockchain.backend.core.block import Block
@@ -7,16 +12,11 @@ from Blockchain.backend.core.blockheader import BlockHeader
 from Blockchain.backend.util.util import hash256, merkle_root, target_to_bits
 from Blockchain.backend.core.database.database import BlockchainDB
 from Blockchain.backend.core.Tx import CoinbaseTx
-from multiprocessing import Process, Manager
-from Blockchain.frontend.run import main
-
-import time
-import requests
-import datetime
+from Blockchain.frontend.run import main # Annahme: 'main' aus frontend/run ist die Webapp
 
 ZERO_HASH = '0' * 64
 VERSION = 1
-INITIAL_TARGET = 0x0000FFFF00000000000000000000000000000000000000000000000000000000
+INITIAL_TARGET = 0x00000FFF00000000000000000000000000000000000000000000000000000000
 PRICE_MAX = 300  # Oberer Grenzwert für den Strompreis zur Anpassung
 PRICE_MIN = 0  # Unterer Grenzwert für den Strompreis zur Anpassung (Preis kann auch negativ sein, 0 als Safe-Guard)
 
@@ -27,8 +27,6 @@ MIN_ADJUSTED_TARGET = int(INITIAL_TARGET * MIN_TARGET_REDUCTION_FACTOR)
 
 SMALL_EASIER_FACTOR = 0.05  # Z.B. 0.05 bedeutet Target wird maximal 5% höher als INITIAL_TARGET
 SLIGHTLY_EASIER_TARGET = int(INITIAL_TARGET * (1 + SMALL_EASIER_FACTOR))
-
-
 
 
 class Blockchain:
@@ -51,103 +49,266 @@ class Blockchain:
     def GenesisBlock(self):
         BlockHeight = 0
         prevBlockHash = ZERO_HASH
+        print(f"\n--- DEBUG: Erstelle Genesis Block (Höhe: {BlockHeight}) ---")
         self.addBlock(BlockHeight, prevBlockHash)
+        print(f"--- DEBUG: Genesis Block erstellt ---")
 
     # Keep Track of all unspent Transactions in cache memory for fast retrival
     def store_uxtos_in_cache(self):
+        print(f"\n--- DEBUG: starte store_uxtos_in_cache ---")
         for tx in self.addTransactionsInBlock:
-            print(f"Transaction added {tx.TxId}")
-            self.utxos[tx.TxId] = tx
+            tx_id_hex = tx.id()
+            print(f"DEBUG: Füge neue UTXO hinzu: TxId {tx_id_hex} mit {len(tx.tx_outs)} Outputs.")
+            self.utxos[tx_id_hex] = tx
+            # Zusätzlicher Debug: Prüfe die Outputs der hinzugefügten Transaktion
+            for i, tx_out in enumerate(tx.tx_outs):
+                print(f"DEBUG: Inspecting TxOut object type: {type(tx_out)}")
+                print(f"DEBUG: TxOut object attributes: {dir(tx_out)}")  # This will list all attributes
+                # ... then try the fix based on what you see in dir(tx_out)
+        print(f"--- DEBUG: store_uxtos_in_cache beendet. Aktuelle UTXOs im Cache: {len(self.utxos)} ---")
+
 
     def remove_spent_Transactions(self):
-        for txId_index in self.remove_spent_transactions:
-            if txId_index[0].hex() in self.utxos:
+        print(f"\n--- DEBUG: starte remove_spent_Transactions ---")
+        print(f"DEBUG: Anzahl der zu entfernenden/aktualisierenden Spents: {len(self.remove_spent_transactions)}")
 
-                if len(self.utxos[txId_index[0].hex()].tx_outs) < 2:
-                    print(f"Spent Transaction removed {txId_index[0].hex()}")
-                    del self.utxos[txId_index[0].hex()]
+        # Erstelle eine Kopie der Liste, um Modifikationen während der Iteration zu vermeiden,
+        # falls die remove_spent_transactions Liste sich auf eine Weise ändern sollte (unwahrscheinlich hier, aber gute Praxis)
+        spent_transactions_to_process = list(self.remove_spent_transactions)
+
+        for txId_index in spent_transactions_to_process:
+            prev_tx_id_hex = txId_index[0].hex()
+            prev_tx_out_index = txId_index[1]
+
+            print(f"DEBUG: Bearbeite spent: PrevTxId={prev_tx_id_hex}, PrevIndex={prev_tx_out_index}")
+
+            if prev_tx_id_hex in self.utxos:
+                # Hole die gesamte vorherige Transaktion, zu der der Output gehörte
+                prev_trans_utxo = self.utxos[prev_tx_id_hex]
+
+                print(f"DEBUG: Gefunden in UTXOs: TxId {prev_tx_id_hex}. Outputs vor dem Entfernen: {len(prev_trans_utxo.tx_outs)}")
+
+                # Check, ob der Index gültig ist, bevor wir darauf zugreifen
+                if 0 <= prev_tx_out_index < len(prev_trans_utxo.tx_outs):
+                    spent_output_amount = prev_trans_utxo.tx_outs[prev_tx_out_index].amount
+                    print(f"DEBUG: Output {prev_tx_out_index} (Amount: {spent_output_amount}) wird als spent markiert.")
+
+                    # Hier ist der kritische Teil. Die Logik muss sauber zwischen:
+                    # 1. Einem Output einer Transaktion, der verbraucht wird, und die Transaktion hat noch andere unverbrauchte Outputs.
+                    # 2. Dem letzten Output einer Transaktion, der verbraucht wird, sodass die gesamte Transaktion gelöscht werden kann.
+
+                    # Falsch: If len(self.utxos[txId_index[0].hex()].tx_outs) < 2:
+                    # Das prüft die Anzahl der Outputs in der *ursprünglichen* Transaktion.
+                    # Es sollte prüfen, wie viele UNVERBRAUCHTE Outputs diese Transaktion nach dem aktuellen Verbrauch noch hat.
+                    # Eine einfache pop() funktioniert nicht direkt für die UTXO-Logik in diesem Dictionary-Format,
+                    # da wir keine Liste von Outputs innerhalb des Dictionary-Werts speichern, sondern die Transaktion selbst.
+                    # Die Logik muss sicherstellen, dass die gesamte Transaktion entfernt wird, wenn alle ihre Outputs verbraucht sind.
+                    # Dies setzt voraus, dass wir irgendwie verfolgen, welche Outputs einer Transaktion bereits verbraucht wurden.
+
+                    # Aktuelle Implementierung:
+                    # Wenn nur ein Output in der vorherigen Transaktion vorhanden war, der jetzt verbraucht wird, lösche die gesamte Transaktion.
+                    if len(prev_trans_utxo.tx_outs) == 1 and prev_tx_out_index == 0:
+                        print(f" Spent Transaction removed (only one output): {prev_tx_id_hex}")
+                        del self.utxos[prev_tx_id_hex]
+                    else:
+                        # Wenn mehrere Outputs vorhanden sind, entfernen wir nur den spezifischen Output.
+                        # ACHTUNG: Das poppt den Eintrag aus der Liste, aber das utxos[prev_tx_id_hex] bleibt die ursprüngliche Transaktion.
+                        # Dies ist **nicht** die korrekte Art, UTXOs zu verwalten, da es die Referenz auf die Transaktion nicht aktualisiert.
+                        # Ein besseres UTXO-Modell würde die UTXOs als Tupel (txid, vout_index) speichern.
+
+                        # --- Korrekturvorschlag für eine robustere UTXO-Verwaltung: ---
+                        # Dies ist ein häufiger Fehler in einfachen UTXO-Modellen.
+                        # Statt die gesamte Transaktion als Wert in self.utxos zu speichern,
+                        # sollte self.utxos eher ein Dictionary sein, das TxID_VOUT_INDEX auf den Output-Objekt abbildet.
+                        # Oder, wenn man die Transaktion selbst speichert, muss man im Auge behalten, welche ihrer Outputs ausgegeben wurden.
+
+                        # Für das aktuelle Datenmodell: Wir entfernen den spezifischen TxOut aus der Liste.
+                        # Dazu erstellen wir eine neue Liste ohne den verbrauchten Output.
+                        new_tx_outs = [
+                            tx_out for i, tx_out in enumerate(prev_trans_utxo.tx_outs)
+                            if i != prev_tx_out_index
+                        ]
+
+                        # Wenn nach dem Entfernen keine Outputs mehr übrig sind, lösche die gesamte Transaktion aus den UTXOs
+                        if not new_tx_outs:
+                            print(f" Spent Transaction removed (all outputs consumed): {prev_tx_id_hex}")
+                            del self.utxos[prev_tx_id_hex]
+                        else:
+                            # Aktualisiere die TxOuts-Liste der gespeicherten Transaktion im UTXO-Cache
+                            prev_trans_utxo.tx_outs = new_tx_outs
+                            self.utxos[prev_tx_id_hex] = prev_trans_utxo # Stelle sicher, dass die Referenz aktualisiert wird (Manager.dict könnte dies benötigen)
+                            print(f"DEBUG: TxId {prev_tx_id_hex} hat noch {len(new_tx_outs)} unverbrauchte Outputs.")
                 else:
-                    prev_trans = self.utxos[txId_index[0].hex()]
-                    self.utxos[txId_index[0].hex()] = prev_trans.tx_outs.pop(txId_index[1])
+                    print(f"WARNING: PrevIndex {prev_tx_out_index} ist für TxId {prev_tx_id_hex} ungültig. Überspringe.")
+            else:
+                print(f"DEBUG: PrevTxId {prev_tx_id_hex} nicht in UTXOs gefunden (wahrscheinlich bereits ausgegeben oder kein UTXO).")
+        print(f"--- DEBUG: remove_spent_Transactions beendet. Aktuelle UTXOs im Cache: {len(self.utxos)} ---")
+
 
     def read_transaction_from_memorypool(self):
-        self.Blocksize = 80
+        self.Blocksize = 80 # Block Header size (approx)
         self.TxIds = []
         self.addTransactionsInBlock = []
-        self.remove_spent_transactions = []
+        self.remove_spent_transactions = [] # Liste von [prev_tx_id_bytes, prev_tx_out_index]
 
-        for tx in self.MemPool:
-            self.TxIds.append(bytes.fromhex(tx))
-            self.addTransactionsInBlock.append(self.MemPool[tx])
-            self.Blocksize += len(self.MemPool[tx].serialize())  # add transactions size to blocksize
+        print(f"\n--- DEBUG: starte read_transaction_from_memorypool ---")
+        print(f"DEBUG: MemPool enthält {len(self.MemPool)} Transaktionen.")
 
-            for spent in self.MemPool[tx].tx_ins:
-                self.remove_spent_transactions.append([spent.prev_tx, spent.prev_index])
+        for tx_id_hex in self.MemPool:
+            tx = self.MemPool[tx_id_hex]
+            self.TxIds.append(bytes.fromhex(tx.id())) # TxId als Bytes für Merkle Root
+            self.addTransactionsInBlock.append(tx)
+            self.Blocksize += len(tx.serialize())  # add transactions size to blocksize
+
+            print(f"DEBUG: Transaktion aus MemPool hinzugefügt: {tx_id_hex}")
+            print(f"DEBUG:   Anzahl Inputs: {len(tx.tx_ins)}, Anzahl Outputs: {len(tx.tx_outs)}")
+
+            for spent_input in tx.tx_ins:
+                # Hier sammeln wir die Inputs, die als 'spent' markiert werden müssen
+                self.remove_spent_transactions.append([spent_input.prev_tx, spent_input.prev_index])
+                print(f"DEBUG:   Markiere Input als spent: PrevTxId={spent_input.prev_tx.hex()}, PrevIndex={spent_input.prev_index}")
+
+        print(f"--- DEBUG: read_transaction_from_memorypool beendet. {len(self.addTransactionsInBlock)} Transaktionen für den Block gesammelt. ---")
 
     def remove_transactions_from_memorypool(self):
-        for tx in self.TxIds:
-            if tx.hex() in self.MemPool:
-                del self.MemPool[tx.hex()]
+        print(f"\n--- DEBUG: starte remove_transactions_from_memorypool ---")
+        initial_mempool_size = len(self.MemPool)
+        removed_count = 0
+        tx_ids_to_remove = [tx.hex() for tx in self.TxIds] # Sicherstellen, dass TxIds im richtigen Format sind
+
+        for tx_id_hex in tx_ids_to_remove:
+            if tx_id_hex in self.MemPool:
+                del self.MemPool[tx_id_hex]
+                removed_count += 1
+                print(f"DEBUG: Transaktion aus MemPool entfernt: {tx_id_hex}")
+        print(f"--- DEBUG: remove_transactions_from_memorypool beendet. {removed_count} von {initial_mempool_size} Transaktionen entfernt. ---")
+
 
     def convert_to_json(self):
         self.TxJson = []
+        print(f"\n--- DEBUG: starte convert_to_json ---")
         for tx in self.addTransactionsInBlock:
             self.TxJson.append(tx.to_dict())
+            # print(f"DEBUG: Transaktion {tx.TxId.hex()} zu JSON konvertiert.") # Zu viele Prints
+        print(f"--- DEBUG: convert_to_json beendet. {len(self.TxJson)} Transaktionen konvertiert. ---")
+
 
     def calculate_fee(self):
         self.input_amount = 0
         self.output_amount = 0
+        self.fee = 0 # Initialisiere Fee
 
-        # calc input amount
+        print(f"\n--- DEBUG: starte calculate_fee ---")
+        print(f"DEBUG: Anzahl der Inputs, die geprüft werden (aus remove_spent_transactions): {len(self.remove_spent_transactions)}")
+
+        """ Calculate Input Amount """
         for TxId_index in self.remove_spent_transactions:
-            if TxId_index[0].hex() in self.utxos:
-                self.input_amount += self.utxos[TxId_index[0].hex()].tx_outs[TxId_index[1]].amount
+            prev_tx_id_hex = TxId_index[0].hex()
+            prev_tx_out_index = TxId_index[1]
 
-        # calc output
+            if prev_tx_id_hex in self.utxos:
+                # Hole die gesamte vorherige Transaktion aus den UTXOs
+                prev_trans = self.utxos[prev_tx_id_hex]
+
+                if 0 <= prev_tx_out_index < len(prev_trans.tx_outs):
+                    input_val = prev_trans.tx_outs[prev_tx_out_index].amount
+                    self.input_amount += input_val
+                    print(f"DEBUG: Input-Betrag hinzugefügt: {input_val} von {prev_tx_id_hex}:{prev_tx_out_index}. Gesamter Input: {self.input_amount}")
+                else:
+                    print(f"WARNING: Ungültiger Output-Index {prev_tx_out_index} für TxId {prev_tx_id_hex} in UTXOs. Ignoriere diesen Input.")
+            else:
+                print(f"WARNING: Vorherige Transaktion {prev_tx_id_hex} für Input nicht in UTXOs gefunden. Könnte schon ausgegeben sein oder Fehler.")
+                # Wenn ein Input nicht in UTXOs gefunden wird, ist das ein Problem.
+                # Es bedeutet, dass eine Transaktion im MemPool einen bereits ausgegebenen Input verwendet hat.
+                # In einer echten Blockchain würde diese Transaktion als ungültig abgelehnt.
+                # Für Debugging: Prüfe, ob dies der Grund ist, warum deine Gebühren falsch sind.
+
+
+        """ Calculate Output Amount """
         for tx in self.addTransactionsInBlock:
-            for tx_out in tx.tx_outs:
+            for i, tx_out in enumerate(tx.tx_outs):
                 self.output_amount += tx_out.amount
+                print(f"DEBUG: Output-Betrag hinzugefügt: {tx_out.amount} von Tx {tx.id()}, Output {i}. Gesamter Output: {self.output_amount}")
 
         self.fee = self.input_amount - self.output_amount
+        print(f"--- DEBUG: calculate_fee beendet ---")
+        print(f"DEBUG: Gesamt Input-Betrag: {self.input_amount}")
+        print(f"DEBUG: Gesamt Output-Betrag: {self.output_amount}")
+        print(f"DEBUG: Berechnete Fee: {self.fee}")
+
+        if self.fee < 0:
+            print("WARNING: Gebühr ist negativ! Das bedeutet, dass mehr ausgegeben als eingenommen wurde. Dies deutet auf einen Fehler in der Transaktionsvalidierung oder der Betragsberechnung hin.")
+        if self.input_amount == 0 and self.output_amount == 0 and len(self.addTransactionsInBlock) > 1:
+            # Wenn es andere Transaktionen als Coinbase gibt, aber 0 Input/Output, stimmt was nicht
+            print("WARNING: Input und Output sind Null, obwohl andere Transaktionen als Coinbase im Block sein sollten. Prüfe die read_transaction_from_memorypool und calculate_fee Logik.")
+
 
     def addBlock(self, BlockHeight, prevBlockHash):
-
+        print(f"\n===== DEBUG: Starte addBlock (Höhe: {BlockHeight}) =====")
+        print(f"DEBUG: Aktueller Target vor Anpassung: {hex(self.current_target)}")
         self.adjust_target_based_on_price()
+        print(f"DEBUG: Aktueller Target nach Anpassung: {hex(self.current_target)}, Bits: {self.bits}")
 
         self.read_transaction_from_memorypool()
-        self.calculate_fee()
+        self.calculate_fee() # Ruft die Gebührenberechnung auf
+
         timestamp = int(time.time())
         coinbaseInstance = CoinbaseTx(BlockHeight)
         coinbaseTx = coinbaseInstance.CoinbaseTransaction()
+        print(f"DEBUG: Ursprüngliche Coinbase Belohnung (ohne Gebühren): {coinbaseTx.tx_outs[0].amount}")
         self.Blocksize += len(coinbaseTx.serialize())  # add coinbasetx size to blocksize
 
-        coinbaseTx.tx_outs[0].amount = coinbaseTx.tx_outs[0].amount + self.fee
+        # Hier wird die Gebühr zur Coinbase-Transaktion hinzugefügt
+        initial_coinbase_amount = coinbaseTx.tx_outs[0].amount
+        coinbaseTx.tx_outs[0].amount = initial_coinbase_amount + self.fee
+        print(f"DEBUG: Coinbase Belohnung nach Gebühren-Addierung: {coinbaseTx.tx_outs[0].amount} (Ursprünglich: {initial_coinbase_amount}, Fee: {self.fee})")
 
-        self.TxIds.insert(0, bytes.fromhex(coinbaseTx.id()))
-        self.addTransactionsInBlock.insert(0, coinbaseTx)
+
+        self.TxIds.insert(0, bytes.fromhex(coinbaseTx.id())) # Füge Coinbase TxId an erster Stelle hinzu
+        self.addTransactionsInBlock.insert(0, coinbaseTx) # Füge Coinbase Tx an erster Stelle der Block-Transaktionen hinzu
 
         merkleRoot = merkle_root(self.TxIds)[::-1].hex()
-        blockHeader = BlockHeader(VERSION, prevBlockHash, merkleRoot, timestamp, self.bits)
-        blockHeader.mine(self.current_target)
+        print(f"DEBUG: Merkle Root: {merkleRoot}")
 
-        self.remove_spent_Transactions()
-        self.remove_transactions_from_memorypool()
-        self.store_uxtos_in_cache()
+        blockHeader = BlockHeader(VERSION, prevBlockHash, merkleRoot, timestamp, self.bits)
+        print(f"DEBUG: Starte Mining für Block {BlockHeight}...")
+        blockHeader.mine(self.current_target)
+        print(f"DEBUG: Mining beendet. Nonce: {blockHeader.nonce}, Block Hash: {blockHeader.blockHash}")
+
+        self.remove_spent_Transactions() # Hier werden die verbrauchten UTXOs entfernt/aktualisiert
+        self.remove_transactions_from_memorypool() # Hier werden die Transaktionen aus dem Mempool entfernt
+        self.store_uxtos_in_cache() # Hier werden die neuen UTXOs (inkl. Rückgeld) hinzugefügt
         self.convert_to_json()
 
         print(f"Block Height {BlockHeight} mined successfully with Nonce value of {blockHeader.nonce}")
-        self.safeInDB([Block(BlockHeight, self.Blocksize, blockHeader.__dict__, 1,
+
+        # Sicherstellen, dass Blocksize korrekt übergeben wird
+        final_block_size = self.Blocksize
+        print(f"DEBUG: Final Blocksize: {final_block_size}")
+
+        self.safeInDB([Block(BlockHeight, final_block_size, blockHeader.__dict__, 1,
                              self.TxJson).__dict__])  # added actual BLocksize to block
+        print(f"===== DEBUG: addBlock (Höhe: {BlockHeight}) beendet =====")
+
 
     def main(self):
+        print("\n--- DEBUG: Starte Blockchain Main Loop ---")
         lastBlock = self.getLastBlock()
         if lastBlock is None:
+            print("DEBUG: Kein letzter Block gefunden. Erstelle Genesis Block.")
             self.GenesisBlock()
+        else:
+            print(f"DEBUG: Letzter Block in DB: Höhe {lastBlock['Height']}, Hash {lastBlock['BlockHeader']['blockHash']}")
+
         while True:
             lastBlock = self.getLastBlock()
             BlockHeight = lastBlock["Height"] + 1
+            print(f"\n--- DEBUG: Beginne mit Mining von Block {BlockHeight} ---")
             prevBlockHash = lastBlock['BlockHeader']["blockHash"]
             self.addBlock(BlockHeight, prevBlockHash)
+            # Eine kleine Pause, um die Ausgaben lesbar zu halten und nicht zu spammen
+            # time.sleep(1)
+
 
     def get_current_electricity_price(self):
         filter_id = 4169
@@ -162,14 +323,11 @@ class Blockchain:
             response.raise_for_status()
 
             print(f"SMARD API: Zeitstempel-Antwort Status Code: {response.status_code}")
-            # print(f"SMARD API: Zeitstempel-Antwort Text (Anfang): {response.text[:500]}...")
-
             timestamps_data = response.json()
 
             if not isinstance(timestamps_data, dict):
                 print(
                     f"SMARD API: Unerwartetes Datenformat für Zeitstempel-Antwort (erwarte Dictionary, bekam {type(timestamps_data)}).")
-                # print(f"SMARD API: Zeitstempel-Antwortinhalt: {timestamps_data}")
                 return None
 
             timestamps = timestamps_data.get("timestamps", [])
@@ -188,14 +346,11 @@ class Blockchain:
             response.raise_for_status()
 
             print(f"SMARD API: Zeitreihen-Antwort Status Code: {response.status_code}")
-            # print(f"SMARD API: Zeitreihen-Antwort Text (Anfang): {response.text[:500]}...") # Zu viel Ausgabe im Normalfall
-
             timeseries_data = response.json()
 
             if not isinstance(timeseries_data, dict):
                 print(
                     f"SMARD API: Unerwartetes Datenformat für Zeitreihen-Antwort (erwarte Dictionary, bekam {type(timeseries_data)}).")
-                # print(f"SMARD API: Zeitreihen-Antwortinhalt: {timeseries_data}") # Zu viel Ausgabe im Normalfall
                 return None
 
             rows = timeseries_data.get("series", [])
@@ -243,13 +398,13 @@ class Blockchain:
         """
         current_time = time.time()
         if current_time - self.last_price_check_time < self.price_check_interval:
-            print("Preisprüfung übersprungen (zu kurzes Intervall seit letzter Prüfung).")
+            print("DEBUG: Preisprüfung übersprungen (zu kurzes Intervall seit letzter Prüfung).")
             return
 
         electricity_price = self.get_current_electricity_price()
 
         if electricity_price is None:
-            print("Konnte keinen Strompreis abrufen. Target bleibt unverändert.")
+            print("DEBUG: Konnte keinen Strompreis abrufen. Target bleibt unverändert.")
             return
 
         # Den Preis auf den definierten Gesamtbereich begrenzen
@@ -265,36 +420,23 @@ class Blockchain:
         T3 = MIN_ADJUSTED_TARGET  # Target bei P3 (absolut schwerstes Mining)
 
         if clamped_price <= EEG_UMLAGE_PRICE:
-            # Segment 1: Preis liegt zwischen PRICE_MIN und EEG_UMLAGE_PRICE (inklusive)
-            # Ziel: Target soll von T1 (sehr leicht) zu T2 (neutral) sinken.
-            # D.h. je höher der Preis (im Bereich 0-12.60), desto schwerer wird Mining (Target sinkt).
-            if (P2 - P1) == 0:  # Division durch Null vermeiden, falls P1 = P2
-                self.current_target = T2  # Bei gleichem Preis und neutralem Punkt, neutrales Target
+            if (P2 - P1) == 0:
+                self.current_target = T2
             else:
-                # price_progress geht von 0 (bei P1) zu 1 (bei P2)
                 price_progress = (clamped_price - P1) / (P2 - P1)
-                # Target interpolieren: T1 ist Startpunkt, (T1-T2) ist die Spanne, die abgezogen wird
                 self.current_target = int(T1 - (T1 - T2) * price_progress)
-        else:  # clamped_price > EEG_UMLAGE_PRICE
-            # Segment 2: Preis liegt zwischen EEG_UMLAGE_PRICE und PRICE_MAX
-            # Ziel: Target soll von T2 (neutral) zu T3 (sehr schwer) sinken.
-            # D.h. je höher der Preis (im Bereich 12.60-300), desto schwerer wird Mining (Target sinkt).
-            if (P3 - P2) == 0:  # Division durch Null vermeiden, falls P2 = P3
-                self.current_target = T2  # Bei gleichem Preis und neutralem Punkt, neutrales Target
+        else:
+            if (P3 - P2) == 0:
+                self.current_target = T2
             else:
-                # price_progress geht von 0 (bei P2) zu 1 (bei P3)
                 price_progress = (clamped_price - P2) / (P3 - P2)
-                # Target interpolieren: T2 ist Startpunkt, (T2-T3) ist die Spanne, die abgezogen wird
                 self.current_target = int(T2 - (T2 - T3) * price_progress)
 
         # Sicherstellen, dass das End-Target immer innerhalb der absoluten Grenzen bleibt
-        # Der gesamte Bereich der möglichen Targets ist von MIN_ADJUSTED_TARGET bis SLIGHTLY_EASIER_TARGET
         self.current_target = max(MIN_ADJUSTED_TARGET, min(SLIGHTLY_EASIER_TARGET, self.current_target))
 
         self.bits = target_to_bits(self.current_target)
-        print(f"Aktuelles Target: {hex(self.current_target)}")
-        print(
-            f"Target angepasst: Durchschnittlicher Preis {electricity_price:.2f} EUR/MWh -> Neues Target (hex): {hex(self.current_target)}, Bits: {self.bits}")
+        print(f"DEBUG: Target angepasst: Durchschnittlicher Preis {electricity_price:.2f} EUR/MWh -> Neues Target (hex): {hex(self.current_target)}, Bits: {self.bits}")
         self.last_price_check_time = current_time
 
 
@@ -303,8 +445,12 @@ if __name__ == "__main__":
         utxos = manager.dict()
         MemPool = manager.dict()
 
+        print("Starte Webanwendungsprozess...")
         webapp = Process(target=main, args=(utxos, MemPool))
         webapp.start()
+        print("Webanwendungsprozess gestartet.")
 
+        print("Starte Blockchain-Prozess...")
         blockchain = Blockchain(utxos, MemPool)
         blockchain.main()
+        print("Blockchain-Prozess gestartet.")
