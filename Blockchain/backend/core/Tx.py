@@ -31,11 +31,57 @@ class CoinbaseTx:
         return coinBaseTx
 
 class Tx:
-    def __init__(self, version, tx_ins, tx_outs, locktime):
+    def __init__(self, version, tx_ins, tx_outs, locktime, segwit=False):
         self.version = version
         self.tx_ins = tx_ins
         self.tx_outs = tx_outs
         self.locktime = locktime
+        self.segwit = segwit
+
+    @classmethod
+    def from_dict(cls, data):
+        tx_ins = [TxIn.from_dict(txi_data) for txi_data in data['tx_ins']]
+        tx_outs = [TxOut.from_dict(txo_data) for txo_data in data['tx_outs']]
+
+        tx_id_from_dict = data.get('TxId')
+
+        new_tx = cls(
+            version=data['version'],
+            tx_ins=tx_ins,
+            tx_outs=tx_outs,
+            locktime=data['locktime'],
+            segwit=data.get('segwit', False)
+        )
+        if tx_id_from_dict:
+            new_tx.TxId = tx_id_from_dict
+        return new_tx
+
+    def to_dict(self):
+        tx_ins_for_dict = []
+        for tx_in_obj in self.tx_ins:
+            tx_ins_for_dict.append(tx_in_obj.to_dict())
+
+        tx_outs_for_dict = []
+        for tx_out_obj in self.tx_outs:
+            tx_outs_for_dict.append(tx_out_obj.to_dict()) 
+
+        tx_dict = {
+            'version': self.version,
+            'tx_ins': tx_ins_for_dict,
+            'tx_outs': tx_outs_for_dict,
+            'locktime': self.locktime,
+            'segwit': self.segwit
+        }
+
+        if hasattr(self, 'TxId'):
+            if isinstance(self.TxId, bytes):
+                tx_dict['TxId'] = self.TxId.hex()
+            else:
+                tx_dict['TxId'] = self.TxId
+        else:
+            tx_dict['TxId'] = self.id()
+
+        return tx_dict
 
     def id(self):
         return self.hash().hex()
@@ -106,30 +152,8 @@ class Tx:
 
         return True
 
-    def to_dict(self):
-
-        for tx_index, tx_in in enumerate(self.tx_ins):
-            if self.is_coinbase():
-                tx_in.script_sig.cmds[0] = little_endian_to_int(tx_in.script_sig.cmds[0])
-
-            tx_in.prev_tx = tx_in.prev_tx.hex()
-
-            for index, cmd in enumerate(tx_in.script_sig.cmds):
-                if isinstance(cmd, bytes):
-                    tx_in.script_sig.cmds[index] = cmd.hex()
-
-            tx_in.script_sig = tx_in.script_sig.__dict__
-            self.tx_ins[tx_index] = tx_in.__dict__
-
-        for index, tx_out in enumerate(self.tx_outs):
-            tx_out.script_pubkey.cmds[2] = tx_out.script_pubkey.cmds[2].hex()
-            tx_out.script_pubkey = tx_out.script_pubkey.__dict__
-            self.tx_outs[index] = tx_out.__dict__
-
-        return self.__dict__
-
 class TxIn:
-    def __init__(self, prev_tx, prev_index, script_sig = None, sequence = 0xffffffff):
+    def __init__(self, prev_tx, prev_index, script_sig=None, sequence=0xffffffff):
         self.prev_tx = prev_tx
         self.prev_index = prev_index
 
@@ -140,6 +164,18 @@ class TxIn:
 
         self.sequence = sequence
 
+    @classmethod
+    def from_dict(cls, data):
+        prev_tx_bytes = bytes.fromhex(data['prev_tx'])
+        script_sig_obj = Script.from_dict(data['script_sig'])
+
+        return cls(
+            prev_tx=prev_tx_bytes,
+            prev_index=data['prev_index'],
+            script_sig=script_sig_obj,
+            sequence=data['sequence']
+        )
+
     def serialize(self):
         result = self.prev_tx[::-1]
         result += int_to_little_endian(self.prev_index,4)
@@ -147,13 +183,39 @@ class TxIn:
         result += int_to_little_endian(self.sequence,4)
         return result
 
+    def to_dict(self):
+        data = {
+            'prev_tx': self.prev_tx.hex() if isinstance(self.prev_tx, bytes) else self.prev_tx,
+            'prev_index': self.prev_index,
+            'script_sig': self.script_sig.to_dict(),
+            'sequence': self.sequence
+        }
+        return data
+
+
 class TxOut:
     def __init__(self, amount, script_pubkey):
         self.amount = amount
         self.script_pubkey = script_pubkey
+
+    @classmethod
+    def from_dict(cls, data):
+        script_pubkey_obj = Script.from_dict(data['script_pubkey'])
+
+        return cls(
+            amount=data['amount'],
+            script_pubkey=script_pubkey_obj
+        )
 
     def serialize(self):
         result = int_to_little_endian(self.amount,8)
         result += self.script_pubkey.serialize()
 
         return result
+
+    def to_dict(self):
+        data = {
+            'amount': self.amount,
+            'script_pubkey': self.script_pubkey.to_dict()
+        }
+        return data
