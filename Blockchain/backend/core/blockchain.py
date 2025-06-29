@@ -67,83 +67,73 @@ class Blockchain:
                 # ... then try the fix based on what you see in dir(tx_out)
         print(f"--- DEBUG: store_uxtos_in_cache beendet. Aktuelle UTXOs im Cache: {len(self.utxos)} ---")
 
-
     def remove_spent_Transactions(self):
         print(f"\n--- DEBUG: starte remove_spent_Transactions ---")
+        # Initialize an empty list to track which UTXOs to remove completely
+        utxos_to_delete_from_cache = []
+
         print(f"DEBUG: Anzahl der zu entfernenden/aktualisierenden Spents: {len(self.remove_spent_transactions)}")
 
-        # Erstelle eine Kopie der Liste, um Modifikationen während der Iteration zu vermeiden,
-        # falls die remove_spent_transactions Liste sich auf eine Weise ändern sollte (unwahrscheinlich hier, aber gute Praxis)
+        # Create a copy for iteration to avoid issues if remove_spent_transactions is modified
+        # (though in this loop it shouldn't be, it's good practice)
         spent_transactions_to_process = list(self.remove_spent_transactions)
 
+        # It's important to clear remove_spent_transactions here, as it's populated for the *current* block.
+        # If the block isn't mined, it might be processed again.
+        # For simplicity, if we assume a block is always eventually mined or rejected, clearing it here is okay.
+        # However, for robustness, you might want to clear it *after* a successful block commit.
+        # For now, let's keep it as is, as the issue is UTXO update, not list clearing.
+
         for txId_index in spent_transactions_to_process:
-            prev_tx_id_hex = txId_index[0].hex()
+            prev_tx_id_bytes = txId_index[0]
+            prev_tx_id_hex = prev_tx_id_bytes.hex()
             prev_tx_out_index = txId_index[1]
 
             print(f"DEBUG: Bearbeite spent: PrevTxId={prev_tx_id_hex}, PrevIndex={prev_tx_out_index}")
 
             if prev_tx_id_hex in self.utxos:
-                # Hole die gesamte vorherige Transaktion, zu der der Output gehörte
+                # Retrieve the object from Manager.dict()
                 prev_trans_utxo = self.utxos[prev_tx_id_hex]
 
-                print(f"DEBUG: Gefunden in UTXOs: TxId {prev_tx_id_hex}. Outputs vor dem Entfernen: {len(prev_trans_utxo.tx_outs)}")
+                print(
+                    f"DEBUG: Gefunden in UTXOs: TxId {prev_tx_id_hex}. Outputs vor dem Entfernen: {len(prev_trans_utxo.tx_outs)}")
 
-                # Check, ob der Index gültig ist, bevor wir darauf zugreifen
                 if 0 <= prev_tx_out_index < len(prev_trans_utxo.tx_outs):
                     spent_output_amount = prev_trans_utxo.tx_outs[prev_tx_out_index].amount
                     print(f"DEBUG: Output {prev_tx_out_index} (Amount: {spent_output_amount}) wird als spent markiert.")
 
-                    # Hier ist der kritische Teil. Die Logik muss sauber zwischen:
-                    # 1. Einem Output einer Transaktion, der verbraucht wird, und die Transaktion hat noch andere unverbrauchte Outputs.
-                    # 2. Dem letzten Output einer Transaktion, der verbraucht wird, sodass die gesamte Transaktion gelöscht werden kann.
+                    # Create a new list of TxOuts excluding the spent one
+                    new_tx_outs = [
+                        tx_out for i, tx_out in enumerate(prev_trans_utxo.tx_outs)
+                        if i != prev_tx_out_index
+                    ]
 
-                    # Falsch: If len(self.utxos[txId_index[0].hex()].tx_outs) < 2:
-                    # Das prüft die Anzahl der Outputs in der *ursprünglichen* Transaktion.
-                    # Es sollte prüfen, wie viele UNVERBRAUCHTE Outputs diese Transaktion nach dem aktuellen Verbrauch noch hat.
-                    # Eine einfache pop() funktioniert nicht direkt für die UTXO-Logik in diesem Dictionary-Format,
-                    # da wir keine Liste von Outputs innerhalb des Dictionary-Werts speichern, sondern die Transaktion selbst.
-                    # Die Logik muss sicherstellen, dass die gesamte Transaktion entfernt wird, wenn alle ihre Outputs verbraucht sind.
-                    # Dies setzt voraus, dass wir irgendwie verfolgen, welche Outputs einer Transaktion bereits verbraucht wurden.
-
-                    # Aktuelle Implementierung:
-                    # Wenn nur ein Output in der vorherigen Transaktion vorhanden war, der jetzt verbraucht wird, lösche die gesamte Transaktion.
-                    if len(prev_trans_utxo.tx_outs) == 1 and prev_tx_out_index == 0:
-                        print(f" Spent Transaction removed (only one output): {prev_tx_id_hex}")
-                        del self.utxos[prev_tx_id_hex]
+                    if not new_tx_outs:
+                        # If no outputs remain, mark the entire transaction for deletion from UTXOs
+                        print(
+                            f"DEBUG: Markiere Transaktion {prev_tx_id_hex} zur vollständigen Entfernung (alle Outputs verbraucht).")
+                        utxos_to_delete_from_cache.append(prev_tx_id_hex)
                     else:
-                        # Wenn mehrere Outputs vorhanden sind, entfernen wir nur den spezifischen Output.
-                        # ACHTUNG: Das poppt den Eintrag aus der Liste, aber das utxos[prev_tx_id_hex] bleibt die ursprüngliche Transaktion.
-                        # Dies ist **nicht** die korrekte Art, UTXOs zu verwalten, da es die Referenz auf die Transaktion nicht aktualisiert.
-                        # Ein besseres UTXO-Modell würde die UTXOs als Tupel (txid, vout_index) speichern.
-
-                        # --- Korrekturvorschlag für eine robustere UTXO-Verwaltung: ---
-                        # Dies ist ein häufiger Fehler in einfachen UTXO-Modellen.
-                        # Statt die gesamte Transaktion als Wert in self.utxos zu speichern,
-                        # sollte self.utxos eher ein Dictionary sein, das TxID_VOUT_INDEX auf den Output-Objekt abbildet.
-                        # Oder, wenn man die Transaktion selbst speichert, muss man im Auge behalten, welche ihrer Outputs ausgegeben wurden.
-
-                        # Für das aktuelle Datenmodell: Wir entfernen den spezifischen TxOut aus der Liste.
-                        # Dazu erstellen wir eine neue Liste ohne den verbrauchten Output.
-                        new_tx_outs = [
-                            tx_out for i, tx_out in enumerate(prev_trans_utxo.tx_outs)
-                            if i != prev_tx_out_index
-                        ]
-
-                        # Wenn nach dem Entfernen keine Outputs mehr übrig sind, lösche die gesamte Transaktion aus den UTXOs
-                        if not new_tx_outs:
-                            print(f" Spent Transaction removed (all outputs consumed): {prev_tx_id_hex}")
-                            del self.utxos[prev_tx_id_hex]
-                        else:
-                            # Aktualisiere die TxOuts-Liste der gespeicherten Transaktion im UTXO-Cache
-                            prev_trans_utxo.tx_outs = new_tx_outs
-                            self.utxos[prev_tx_id_hex] = prev_trans_utxo # Stelle sicher, dass die Referenz aktualisiert wird (Manager.dict könnte dies benötigen)
-                            print(f"DEBUG: TxId {prev_tx_id_hex} hat noch {len(new_tx_outs)} unverbrauchte Outputs.")
+                        # Update the tx_outs attribute of the Tx object
+                        prev_trans_utxo.tx_outs = new_tx_outs
+                        # Explicitly re-assign the modified object back to the Manager.dict()
+                        self.utxos[prev_tx_id_hex] = prev_trans_utxo
+                        print(
+                            f"DEBUG: TxId {prev_tx_id_hex} hat noch {len(new_tx_outs)} unverbrauchte Outputs. UTXO-Cache aktualisiert.")
                 else:
-                    print(f"WARNING: PrevIndex {prev_tx_out_index} ist für TxId {prev_tx_id_hex} ungültig. Überspringe.")
+                    print(
+                        f"WARNING: PrevIndex {prev_tx_out_index} ist für TxId {prev_tx_id_hex} ungültig (bereits ausgegeben?). Überspringe.")
             else:
-                print(f"DEBUG: PrevTxId {prev_tx_id_hex} nicht in UTXOs gefunden (wahrscheinlich bereits ausgegeben oder kein UTXO).")
-        print(f"--- DEBUG: remove_spent_Transactions beendet. Aktuelle UTXOs im Cache: {len(self.utxos)} ---")
+                print(
+                    f"WARNING: Vorherige Transaktion {prev_tx_id_hex} für Input nicht in UTXOs gefunden. Könnte schon ausgegeben sein oder Fehler.")
 
+        # Finally, remove all transactions marked for complete deletion
+        for tx_id_hex in utxos_to_delete_from_cache:
+            if tx_id_hex in self.utxos:  # Check again in case it was already removed by another input in the same block
+                print(f"DEBUG: Entferne Transaktion {tx_id_hex} vollständig aus UTXOs (keine Outputs mehr).")
+                del self.utxos[tx_id_hex]
+
+        print(f"--- DEBUG: remove_spent_Transactions beendet. Aktuelle UTXOs im Cache: {len(self.utxos)} ---")
 
     def read_transaction_from_memorypool(self):
         self.Blocksize = 80 # Block Header size (approx)
