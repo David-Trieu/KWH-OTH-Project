@@ -45,23 +45,41 @@ def wallet():
     transactionHistory, code = myacc.get_address_history(test)
 
     print(json.dumps(transactionHistory.json, indent=4))
-
+    print(code)
     # THIS IS THE CRUCIAL PART: Extract the actual data from the response_obj
+
     if code == 200:
+        parsed_json_data = None
+        # Versuche, die JSON-Daten aus dem Response-Objekt zu extrahieren
         if hasattr(transactionHistory, 'json') and transactionHistory.json is not None:
-            transaction_history_data = transactionHistory.json  # <--- This is the Python list you want!
+            parsed_json_data = transactionHistory.json
         elif hasattr(transactionHistory, 'get_json') and transactionHistory.get_json() is not None:
-            transaction_history_data = transactionHistory.get_json()  # <--- This is the Python list you want!
+            parsed_json_data = transactionHistory.get_json()
         else:
+            # Fallback für den Fall, dass .json oder .get_json() nicht verfügbar sind
             try:
-                transaction_history_data = json.loads(transactionHistory.get_data(as_text=True))
+                parsed_json_data = json.loads(transactionHistory.get_data(as_text=True))
             except Exception as e:
-                print(f"Error decoding transaction history JSON from response data: {e}")
-                transaction_history_data = []  # Default to empty list on error
+                print(f"Fehler beim Decodieren der Transaktionshistorie JSON aus den Response-Daten: {e}")
+
+        if parsed_json_data is not None:
+            if isinstance(parsed_json_data, list):
+                # Wenn die Antwort direkt eine Liste von Transaktionen ist (Erfolgreicher Fall mit Daten)
+                transaction_history_data = parsed_json_data
+            elif isinstance(parsed_json_data, dict) and "history" in parsed_json_data:
+                # Wenn die Antwort ein Dictionary ist, das einen "history"-Schlüssel enthält
+                # Dies deckt den Fall ab, wenn keine Transaktionen gefunden wurden: {"history": [], "message": "..."}
+                transaction_history_data = parsed_json_data["history"]
+            else:
+                # Unerwartete, aber erfolgreiche JSON-Struktur (z.B. wenn es ein Dict ohne "history" ist)
+                print(f"Unerwartete JSON-Struktur für erfolgreiche Antwort: {parsed_json_data}")
+                transaction_history_data = [] # Standardmäßig auf leere Liste setzen
     else:
-        print(
-            f"Error fetching transaction history: Status {code}, Response: {transactionHistory.get_data(as_text=True)}")
-        transaction_history_data = []  # Default to empty list on error
+        # Wenn get_address_history einen Fehler-Statuscode zurückgegeben hat
+        error_msg = transactionHistory.get_data(as_text=True) if transactionHistory else "Keine Antwortdaten"
+        print(f"Fehler beim Abrufen der Transaktionshistorie: Status {transactionHistory}, Antwort: {error_msg}")
+        transaction_history_data = [] # Standardmäßig auf leere Liste setzen bei Fehler
+
 
     #print(json.dumps(transactionHistory.json, indent=2))
     if test is None:

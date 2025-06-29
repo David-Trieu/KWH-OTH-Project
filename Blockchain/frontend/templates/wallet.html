@@ -130,7 +130,7 @@
                                             {% endif %}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
-                                            {% if tx.Type == 'Sent' %}-{% else %}+{% endif %}{{ "%.8f"|format(tx['Amount (BTC)']|float) }}
+                                             {% if tx.Type == 'Sent' %}-{% else %}+{% endif %}{{ tx['Amount (Satoshi)']/1000 }}
                                         </td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 truncate max-w-xs"
                                             title="{% if tx.Type == 'Sent' and 'Sent To' in tx['To/From'] %}{{ tx['To/From'].split('Sent To ')[1] }}{% elif tx.Type == 'Received' %}{{ tx.Address }}{% else %}{{ tx.Address }}{% endif %}">
