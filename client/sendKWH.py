@@ -4,6 +4,7 @@ from Blockchain.backend.core.Script import Script
 from Blockchain.backend.core.Tx import TxIn, TxOut, Tx  # Ensure Tx is imported
 from Blockchain.backend.core.database.database import AccountDB
 from Blockchain.backend.core.EllepticCurve.EllepticCurve import PrivateKey
+#from Blockchain.backend.core.blockchain import Blockchain
 
 
 class SendKWH:

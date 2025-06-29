@@ -2,12 +2,9 @@
 
 from flask import Flask, render_template, request, session, redirect, url_for
 import multiprocessing  # Erforderlich, wenn Manager().dict() für UTXOS/MEMPOOL verwendet wird
-
+import json
 from client.accountInfo import accountInfo
 from client.sendKWH import SendKWH
-from Blockchain.backend.core.Tx import Tx  # Sicherstellen, dass Tx importiert ist
-
-# REMOVED: from Blockchain.backend.wallet.wallet import Wallet # <--- DIESE ZEILE ENTFERNEN
 
 app = Flask(__name__)
 
@@ -52,7 +49,50 @@ def wallet():
     message = ''
     current_user_address = session.get('myAccount', None)
 
-    if current_user_address is None:
+    test = session.get('myAccount', None)
+    myacc = accountInfo(test, UTXOS)
+    balance = myacc.getBalance()
+    transactionHistory, code = myacc.get_address_history(test)
+
+    print(json.dumps(transactionHistory.json, indent=4))
+    print(code)
+    # THIS IS THE CRUCIAL PART: Extract the actual data from the response_obj
+
+    if code == 200:
+        parsed_json_data = None
+        # Versuche, die JSON-Daten aus dem Response-Objekt zu extrahieren
+        if hasattr(transactionHistory, 'json') and transactionHistory.json is not None:
+            parsed_json_data = transactionHistory.json
+        elif hasattr(transactionHistory, 'get_json') and transactionHistory.get_json() is not None:
+            parsed_json_data = transactionHistory.get_json()
+        else:
+            # Fallback für den Fall, dass .json oder .get_json() nicht verfügbar sind
+            try:
+                parsed_json_data = json.loads(transactionHistory.get_data(as_text=True))
+            except Exception as e:
+                print(f"Fehler beim Decodieren der Transaktionshistorie JSON aus den Response-Daten: {e}")
+
+        if parsed_json_data is not None:
+            if isinstance(parsed_json_data, list):
+                # Wenn die Antwort direkt eine Liste von Transaktionen ist (Erfolgreicher Fall mit Daten)
+                transaction_history_data = parsed_json_data
+            elif isinstance(parsed_json_data, dict) and "history" in parsed_json_data:
+                # Wenn die Antwort ein Dictionary ist, das einen "history"-Schlüssel enthält
+                # Dies deckt den Fall ab, wenn keine Transaktionen gefunden wurden: {"history": [], "message": "..."}
+                transaction_history_data = parsed_json_data["history"]
+            else:
+                # Unerwartete, aber erfolgreiche JSON-Struktur (z.B. wenn es ein Dict ohne "history" ist)
+                print(f"Unerwartete JSON-Struktur für erfolgreiche Antwort: {parsed_json_data}")
+                transaction_history_data = [] # Standardmäßig auf leere Liste setzen
+    else:
+        # Wenn get_address_history einen Fehler-Statuscode zurückgegeben hat
+        error_msg = transactionHistory.get_data(as_text=True) if transactionHistory else "Keine Antwortdaten"
+        print(f"Fehler beim Abrufen der Transaktionshistorie: Status {transactionHistory}, Antwort: {error_msg}")
+        transaction_history_data = [] # Standardmäßig auf leere Liste setzen bei Fehler
+
+
+    #print(json.dumps(transactionHistory.json, indent=2))
+    if test is None:
         return redirect(url_for('index'))
 
     # Sicherstellen, dass globale Variablen initialisiert sind
@@ -110,7 +150,7 @@ def wallet():
                 message = "Transaktion Verifizierung fehlgeschlagen! Wird nicht zum MemoryPool hinzugefügt."
                 print(f"ERROR (run.py): Transaktion {TxObj.TxId} Verifizierung fehlgeschlagen.")
 
-    return render_template('wallet.html', message=message, balance=balance)
+    return render_template('wallet.html', message = message, balance = balance, transactionHistory = transaction_history_data)
 
 
 def main(utxos, MemPool):

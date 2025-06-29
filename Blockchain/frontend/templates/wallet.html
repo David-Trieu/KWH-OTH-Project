@@ -93,7 +93,6 @@
             </div>
         </section>
 
-        <!-- Transaction History -->
         <section id="transaction-history" class="mb-12 animate-on-scroll pop-in animate-delay-400">
             <div class="card">
                 <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Transaktionsverlauf</h2>
@@ -109,58 +108,60 @@
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">2024-07-28 10:30</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                        <svg class="w-4 h-4 mr-1.5 -ml-0.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v4a1 1 0 102 0V7zm-1 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"></path></svg>
-                                        Gesendet
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">-50.00</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 truncate max-w-xs" title="0xAbcDeF1234567890AbcDeF1234567890AbcDeF12">0xAbcDe...F12</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                        Bestätigt
-                                    </span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">2024-07-27 15:45</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                         <svg class="w-4 h-4 mr-1.5 -ml-0.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
-                                        Empfangen
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">+120.75</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 truncate max-w-xs" title="0xZyXwVuT987654321ZyXwVuT987654321ZyXwVuT9">0xZyXwV...uT9</td>
-                                 <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                                        Bestätigt
-                                    </span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">2024-07-26 09:12</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                                        <svg class="w-4 h-4 mr-1.5 -ml-0.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v4a1 1 0 102 0V7zm-1 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"></path></svg>
-                                        Gesendet
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">-200.00</td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 truncate max-w-xs" title="0xMnOpQrS543210987MnOpQrS543210987MnOpQrS5">0xMnOpQ...rS5</td>
-                                 <td class="px-6 py-4 whitespace-nowrap text-sm">
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                                        Ausstehend
-                                    </span>
-                                </td>
-                            </tr>
+                            {% if transactionHistory %}
+                                {% for tx in transactionHistory %}
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ tx.Timestamp }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                            {% if tx.Type == 'Sent' %}
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                                    <svg class="w-4 h-4 mr-1.5 -ml-0.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v4a1 1 0 102 0V7zm-1 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"></path></svg>
+                                                    Gesendet
+                                                </span>
+                                            {% elif tx.Type == 'Received' %}
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                     <svg class="w-4 h-4 mr-1.5 -ml-0.5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                                                    Empfangen
+                                                </span>
+                                            {% else %}
+                                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                                    {{ tx.Type }}
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">
+                                             {% if tx.Type == 'Sent' %}-{% else %}+{% endif %}{{ tx['Amount (Satoshi)']/1000 }}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 truncate max-w-xs"
+                                            title="{% if tx.Type == 'Sent' and 'Sent To' in tx['To/From'] %}{{ tx['To/From'].split('Sent To ')[1] }}{% elif tx.Type == 'Received' %}{{ tx.Address }}{% else %}{{ tx.Address }}{% endif %}">
+                                            {% if tx.Type == 'Sent' and 'Sent To' in tx['To/From'] %}
+                                                {% set target_addr = tx['To/From'].split('Sent To ')[1] %}
+                                                {{ target_addr[:8] }}...{{ target_addr[-8:] }}
+                                            {% elif tx.Type == 'Received' %}
+                                                {{ tx.Address[:8] }}...{{ tx.Address[-8:] }}
+                                            {% else %}
+                                                {{ tx.Address[:8] }}...{{ tx.Address[-8:] }}
+                                            {% endif %}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                                Bestätigt {# Assuming all history from get_address_history is confirmed #}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="5" class="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-500">
+                                        Keine Transaktionen gefunden.
+                                    </td>
+                                </tr>
+                            {% endif %}
                         </tbody>
                     </table>
                 </div>
-                 <p class="text-xs text-gray-500 mt-4 text-center">Dies sind Beispieldaten. Echte Transaktionen werden hier angezeigt.</p>
+                {# Removed the dummy data message, as actual data will be displayed #}
+                {# <p class="text-xs text-gray-500 mt-4 text-center">Dies sind Beispieldaten. Echte Transaktionen werden hier angezeigt.</p> #}
             </div>
         </section>
     </main>
