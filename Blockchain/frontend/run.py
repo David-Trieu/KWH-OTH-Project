@@ -66,7 +66,10 @@ def wallet():
 
     test = session.get('myAccount', None)
     myacc = accountInfo(test, UTXOS)
-    balance = myacc.getBalance()
+    try:
+        balance = myacc.getBalance()
+    except ValueError:
+        return render_template('login.html', message="Diese Adresse existiert nicht")
     transactionHistory, code = myacc.get_address_history(test)
 
     print(json.dumps(transactionHistory.json, indent=4))
