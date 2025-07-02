@@ -15,17 +15,14 @@ from Blockchain.backend.core.EllepticCurve.EllepticCurve import PrivateKey
 import time
 
 
-# --- YOUR ACCOUNT/SENDING CLASS (remains unchanged) ---
 class accountInfo:
     def __init__(self, fromAccount, UTXOS):
         self.COIN = 1000
         self.FromPublicAddress = fromAccount
         self.utxos = UTXOS
 
-        # Corrected path calculation
-        # This will always find 'blockchain' relative to 'accountInfo.py'
         current_script_dir = os.path.dirname(os.path.abspath(__file__))
-        project_root_dir = os.path.dirname(current_script_dir)  # Go up from 'client' to 'KWH-OTH-Project'
+        project_root_dir = os.path.dirname(current_script_dir)
         self.BLOCKCHAIN_DATA_FILE = os.path.join(project_root_dir, 'data', 'blockchain')
 
     def scriptPubKey(self, PublicAddress):
@@ -62,10 +59,6 @@ class accountInfo:
         return self.Balance / self.COIN
 
     def decode_base58_address(self, address):
-        """
-        Decodes a Base58 address into its PubKeyHash (hex string).
-        Handles potential errors during decoding.
-        """
         try:
             decoded = base58.b58decode(address)
             if len(decoded) < 5:
@@ -80,13 +73,8 @@ class accountInfo:
             return None
 
     def encode_pubkey_hash_to_address(self, pubkey_hash):
-        """
-        Encodes a PubKeyHash (hex string) back into a Base58 address.
-        This is a simplified version and assumes a Bitcoin-like P2PKH address structure.
-        Needs to match your `decode_base58` and `encode_base58_checksum` in your backend.
-        """
         try:
-            version_byte = b'\x00'  # Or whatever your project uses for its address version
+            version_byte = b'\x00'
             decoded_pubkey_hash = bytes.fromhex(pubkey_hash)
             full_payload = version_byte + decoded_pubkey_hash
             checksum = hashlib.sha256(hashlib.sha256(full_payload).digest()).digest()[:4]
@@ -96,10 +84,6 @@ class accountInfo:
             return "Unknown Address"
 
     def get_transaction_history(self, blockchain_data, target_address):
-        """
-        Retrieves the transaction history for a given target address from blockchain data,
-        including both received and sent transactions, excluding coinbase rewards.
-        """
         history = []
         target_pubkey_hash = self.decode_base58_address(target_address)
 
@@ -107,9 +91,7 @@ class accountInfo:
             print(f"Skipping history retrieval for address '{target_address}' due to invalid address decoding.")
             return []
 
-        print(f"Retrieving transaction history for address: {target_address} (PubKeyHash: {target_pubkey_hash})\n")
 
-        # Create a quick lookup for transaction outputs by TxId for resolving inputs
         tx_output_lookup = {}
         for block in blockchain_data:
             for tx in block["Txs"]:
@@ -121,7 +103,7 @@ class accountInfo:
 
         for block in blockchain_data:
             block_height = block["Height"]
-            block_hash = block["BlockHeader"]["blockHash"]
+            block_hash = block["BlockHeader"]["block_hash"]
             timestamp_dt = datetime.datetime.fromtimestamp(block["BlockHeader"]["timestamp"])
 
             for tx in block["Txs"]:
@@ -130,15 +112,14 @@ class accountInfo:
                                   "prev_tx"] == "0000000000000000000000000000000000000000000000000000000000000000" and \
                               tx["tx_ins"][0]["prev_index"] == 4294967295
 
-                # --- Check for RECEIVED Transactions ---
-                # Exclude coinbase rewards here
-                if not is_coinbase:  # <--- Added this condition
+
+                if not is_coinbase:
                     for tx_out_index, tx_out in enumerate(tx["tx_outs"]):
                         script_pubkey_cmds = tx_out["script_pubkey"]["cmds"]
                         if len(script_pubkey_cmds) == 5 and script_pubkey_cmds[2].lower() == target_pubkey_hash.lower():
                             amount_satoshi = tx_out["amount"]
                             amount_btc_display = amount_satoshi / 100_000_000
-                            transaction_type = "Received"  # Removed "Coinbase Reward"
+                            transaction_type = "Received"
                             history.append({
                                 "Block Height": block_height,
                                 "Block Hash": block_hash,
@@ -152,7 +133,6 @@ class accountInfo:
                                 "Tx Output Index": tx_out_index
                             })
 
-                # --- Check for SENT Transactions (if not a coinbase, as coinbase has no sender) ---
                 if not is_coinbase:
                     is_sender = False
                     total_input_amount = 0
@@ -197,14 +177,9 @@ class accountInfo:
         return history
 
     def get_address_history(self, address):
-        """
-        API endpoint to retrieve transaction history for a given address.
-        Accessed via GET request: /history/<address>
-        Example: http://localhost:5000/history/1LWxEfevJUFv73hVGmqJ72ZwfqYv1GzMUk
-        """
+
         BLOCKCHAIN_DATA_FILE = '../data/blockchain'
         blockchain_data = []
-        print(f"Attempting to load blockchain data from: {self.BLOCKCHAIN_DATA_FILE}")
         try:
             with open(self.BLOCKCHAIN_DATA_FILE, 'r') as f:
                 blockchain_data = json.load(f)
@@ -226,11 +201,8 @@ class accountInfo:
         history = self.get_transaction_history(blockchain_data, address)
 
         if not history:
-            # If no transactions are found for a valid address, return an empty list with 200 OK
-            # This signifies the request was processed successfully, but no relevant data exists.
             return jsonify({"message": f"No transactions found for address '{address}'.", "history": []}), 200
         else:
-            # Return the found history as a JSON array
             return jsonify(history), 200
 
 

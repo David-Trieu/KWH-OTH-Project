@@ -1,49 +1,65 @@
 from Blockchain.backend.util.util import int_to_little_endian, encode_varint
-from Blockchain.backend.core.EllepticCurve.op import OP_CODE_FUNCTION
+from Blockchain.backend.core.EllepticCurve.op import OP_CODE_FUNCTION # Note: Typo 'EllepticCurve' -> 'EllipticCurve'?
 
 class Script:
-    def __init__(self, cmds = None):
+    def __init__(self, cmds=None):
         if cmds is None:
             self.cmds = []
         else:
             self.cmds = cmds
 
+    @classmethod
+    def from_dict(cls, data):
+        cmds = []
+
+        for cmd_item in data.get('cmds', []):
+            if isinstance(cmd_item, str):
+                cmds.append(bytes.fromhex(cmd_item))
+            elif isinstance(cmd_item, int):
+                cmds.append(cmd_item)
+            else:
+                cmds.append(cmd_item)
+
+        return cls(cmds=cmds)
+
+    def to_dict(self):
+        serialized_cmds = []
+        for cmd in self.cmds:
+            if isinstance(cmd, bytes):
+                serialized_cmds.append(cmd.hex())
+            elif isinstance(cmd, int):
+                serialized_cmds.append(cmd)
+            else:
+                serialized_cmds.append(cmd)
+
+        return {
+            'cmds': serialized_cmds
+        }
+
+
     def __add__(self, other):
         return Script(self.cmds + other.cmds)
 
     def serialize(self):
-        # initialize what we'll send back
         result = b""
-        # go through each cmd
         for cmd in self.cmds:
-            # if the cmd is an integer, it's an opcode
             if type(cmd) == int:
-                # turn the cmd into a single byte integer using int_to_little_endian
-                # result += int_to_little_endian(cmd, 1)
                 result += int_to_little_endian(cmd, 1)
             else:
-                # otherwise, this is an element
-                # get the length in bytes
                 length = len(cmd)
-                # for large lengths, we have to use a pushdata opcode
                 if length < 75:
-                    # turn the length into a single byte integer
                     result += int_to_little_endian(length, 1)
-                elif length > 75 and length < 0x100:
-                    # 76 is pushdata1
+                elif length >= 75 and length < 0x100:
                     result += int_to_little_endian(76, 1)
                     result += int_to_little_endian(length, 1)
                 elif length >= 0x100 and length <= 520:
-                    # 77 is pushdata2
                     result += int_to_little_endian(77, 1)
                     result += int_to_little_endian(length, 2)
                 else:
-                    raise ValueError("too long an cmd")
+                    raise ValueError("too long cmd")
 
                 result += cmd
-        # get the length of the whole thing
         total = len(result)
-        # encode_varint the total length of the result and prepend
         return encode_varint(total) + result
 
     def evaluate(self, z):
@@ -55,7 +71,6 @@ class Script:
 
             if type(cmd) == int:
                 operation = OP_CODE_FUNCTION[cmd]
-
                 if cmd == 172:
                     if not operation(stack, z):
                         print(f"Error in Signature Verification")
@@ -70,4 +85,8 @@ class Script:
 
     @classmethod
     def p2pkh_script(cls, h160):
-        return Script([0x76, 0xa9, h160, 0x88, 0xac])
+        OP_DUP = 0x76
+        OP_HASH160 = 0xa9
+        OP_EQUALVERIFY = 0x88
+        OP_CHECKSIG = 0xac
+        return cls([OP_DUP, OP_HASH160, h160, OP_EQUALVERIFY, OP_CHECKSIG])
