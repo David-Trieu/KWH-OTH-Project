@@ -2,6 +2,9 @@
 
 from flask import Flask, render_template, request, session, redirect, url_for
 import json
+
+from Blockchain.backend.core.database.database import AccountDB
+from client.account import account
 from client.accountInfo import accountInfo
 from client.sendKWH import SendKWH
 from waitress import serve
@@ -20,6 +23,20 @@ def index():
     message = ""
     return render_template('index.html', message=message)
 
+@app.route('/signup', methods=['GET', 'POST'])
+def signup():
+    print("signup")
+    acct = account()
+    acct.createKeys()
+    try:
+        # Save the account details using AccountDB
+        AccountDB().write([acct.__dict__])
+        session['myAccount'] = acct.PublicAddress
+        message = "Hier ist deine Wallet-Adresse. \n Bitte schreibe sie dir auf. \n" + acct.PublicAddress
+    except Exception as e:
+        message = f"Error creating account: {e}"
+        print(f"Database write error: {e}")
+    return render_template('signup.html', message=message)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
