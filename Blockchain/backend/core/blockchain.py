@@ -19,7 +19,7 @@ VERSION = 1
 INITIAL_TARGET = 0x00000FFFF0000000000000000000000000000000000000000000000000000000
 PRICE_MIN = 0
 
-EEG_UMLAGE_PRICE = 12.60
+EEG_UMLAGE_PRICE = 12.60 #ct
 
 
 SMALL_EASIER_FACTOR = 0.2
@@ -305,7 +305,7 @@ class Blockchain:
             average_price = sum(valid_prices) / len(valid_prices)
             print(
                 f"SMARD API: Durchschnittlicher Strompreis der verfügbaren gültigen Stunden: {average_price:.2f} EUR/MWh")
-            return average_price
+            return average_price/10 #weil es in EUR/MWh also /1000 für KWh und dann *100 für ct
 
         except requests.exceptions.RequestException as e:
             print(f"SMARD API Fehler bei der Anfrage (Netzwerk/HTTP): {e}")
@@ -329,6 +329,8 @@ class Blockchain:
         if electricity_price is None:
             print("DEBUG: Konnte keinen Strompreis abrufen. Target bleibt unverändert.")
             return
+
+        print(f"{electricity_price} ct pro KWh")
 
         if electricity_price <= EEG_UMLAGE_PRICE:
             if electricity_price <= 0 or electricity_price == EEG_UMLAGE_PRICE:
