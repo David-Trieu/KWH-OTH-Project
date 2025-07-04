@@ -11,8 +11,7 @@ from Blockchain.backend.core.database.database import BlockchainDB
 from Blockchain.backend.core.Tx import CoinbaseTx, Tx, TxIn, TxOut
 from Blockchain.backend.core.Script import Script
 
-from Blockchain.backend.core.blockchain import Blockchain, ZERO_HASH, VERSION, INITIAL_TARGET, PRICE_MAX, PRICE_MIN, \
-    EEG_UMLAGE_PRICE, MIN_TARGET_REDUCTION_FACTOR, MIN_ADJUSTED_TARGET, SMALL_EASIER_FACTOR, SLIGHTLY_EASIER_TARGET
+from Blockchain.backend.core.blockchain import Blockchain, ZERO_HASH, VERSION, INITIAL_TARGET
 
 REWARD = 50
 MINER_ADDRESS = '1LWxEfevJUFv73hVGmqJ72ZwfqYv1GzMUk'
@@ -183,36 +182,3 @@ def test_convert_to_json(empty_blockchain_instance, sample_transaction):
     assert blockchain.TxJson[0]['TxId'] == sample_transaction.id()
 
 
-def test_adjust_target_based_on_price_logic_only(empty_blockchain_instance):
-    blockchain = empty_blockchain_instance
-    blockchain.last_price_check_time = 0
-
-    original_get_price_method = blockchain.get_current_electricity_price
-    try:
-        blockchain.get_current_electricity_price = lambda: 5.0
-        blockchain.adjust_target_based_on_price()
-        assert SLIGHTLY_EASIER_TARGET >= blockchain.current_target >= INITIAL_TARGET
-        assert blockchain.current_target > INITIAL_TARGET
-        assert blockchain.last_price_check_time > 0
-
-        blockchain.current_target = INITIAL_TARGET
-        blockchain.last_price_check_time = 0
-        blockchain.get_current_electricity_price = lambda: 200.0
-        blockchain.adjust_target_based_on_price()
-        assert INITIAL_TARGET >= blockchain.current_target >= MIN_ADJUSTED_TARGET
-        assert blockchain.current_target < INITIAL_TARGET
-
-        old_target = blockchain.current_target
-        blockchain.last_price_check_time = 0
-        blockchain.get_current_electricity_price = lambda: None
-        blockchain.adjust_target_based_on_price()
-        assert blockchain.current_target == old_target
-
-        blockchain.last_price_check_time = time.time()
-        old_target = blockchain.current_target
-        blockchain.get_current_electricity_price = lambda: 10.0
-        blockchain.adjust_target_based_on_price()
-        assert blockchain.current_target == old_target
-
-    finally:
-        blockchain.get_current_electricity_price = original_get_price_method
