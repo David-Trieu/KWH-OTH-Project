@@ -19,7 +19,7 @@ VERSION = 1
 INITIAL_TARGET = 0x00000FFFF0000000000000000000000000000000000000000000000000000000
 PRICE_MIN = 0
 
-EEG_UMLAGE_PRICE = 12.60 #ct
+EEG_EINSPEISE_VERGÜTUNG = 12.60 #ct
 
 
 SMALL_EASIER_FACTOR = 0.2
@@ -332,14 +332,14 @@ class Blockchain:
 
         print(f"{electricity_price} ct pro KWh")
 
-        if electricity_price <= EEG_UMLAGE_PRICE:
-            if electricity_price <= 0 or electricity_price == EEG_UMLAGE_PRICE:
+        if electricity_price <= EEG_EINSPEISE_VERGÜTUNG:
+            if electricity_price <= 0 or electricity_price == EEG_EINSPEISE_VERGÜTUNG:
                 self.current_target = INITIAL_TARGET
             else:
-                price_progress = (electricity_price) / (EEG_UMLAGE_PRICE)
+                price_progress = electricity_price / EEG_EINSPEISE_VERGÜTUNG
                 self.current_target = int(SLIGHTLY_EASIER_TARGET - (SLIGHTLY_EASIER_TARGET - INITIAL_TARGET) * price_progress)
         else:
-            price_progress = (EEG_UMLAGE_PRICE/electricity_price)
+            price_progress = (EEG_EINSPEISE_VERGÜTUNG/electricity_price)
             self.current_target = int(INITIAL_TARGET * price_progress)
 
 
