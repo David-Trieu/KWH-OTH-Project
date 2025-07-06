@@ -2,7 +2,7 @@ from Blockchain.backend.core.Script import Script
 from Blockchain.backend.util.util import int_to_little_endian, bytes_needed, decode_base58, little_endian_to_int,encode_varint,hash256
 
 ZERO_HASH = b'\0' * 32
-REWARD = 50
+REWARD = 1
 
 PRIVATE_KEY = '48193883354678373310384789638833730691026922349095996900916740842334379620790'
 MINER_ADDRESS = '1LWxEfevJUFv73hVGmqJ72ZwfqYv1GzMUk'
@@ -50,7 +50,7 @@ class Tx:
             tx_ins=tx_ins,
             tx_outs=tx_outs,
             locktime=data['locktime'],
-            segwit=data.get('segwit', False) # This line is now correct and will pass 'segwit'
+            segwit=data.get('segwit', False)
         )
         if tx_id_from_dict:
             new_tx.TxId = tx_id_from_dict
@@ -59,11 +59,11 @@ class Tx:
     def to_dict(self):
         tx_ins_for_dict = []
         for tx_in_obj in self.tx_ins:
-            tx_ins_for_dict.append(tx_in_obj.to_dict())  # Delegation to TxIn.to_dict()
+            tx_ins_for_dict.append(tx_in_obj.to_dict())
 
         tx_outs_for_dict = []
         for tx_out_obj in self.tx_outs:
-            tx_outs_for_dict.append(tx_out_obj.to_dict())  # Delegation to TxOut.to_dict()
+            tx_outs_for_dict.append(tx_out_obj.to_dict())
 
         tx_dict = {
             'version': self.version,
