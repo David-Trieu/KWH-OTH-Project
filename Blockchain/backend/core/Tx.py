@@ -2,7 +2,7 @@ from Blockchain.backend.core.Script import Script
 from Blockchain.backend.util.util import int_to_little_endian, bytes_needed, decode_base58, little_endian_to_int,encode_varint,hash256
 
 ZERO_HASH = b'\0' * 32
-REWARD = 50
+REWARD = 1
 
 PRIVATE_KEY = '48193883354678373310384789638833730691026922349095996900916740842334379620790'
 MINER_ADDRESS = '1LWxEfevJUFv73hVGmqJ72ZwfqYv1GzMUk'
