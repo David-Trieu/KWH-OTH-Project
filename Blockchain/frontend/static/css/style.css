@@ -1,55 +1,55 @@
 
 body {
     font-family: 'Inter', sans-serif;
-    background-color: #F8F9FA; /* Warm Neutral Background */
-    color: #212529; /* Dark Gray Text */
+    background-color: #F8F9FA;
+    color: #212529;
 }
 .hero-gradient {
-    background: linear-gradient(135deg, #096f84 0%, #075f72 100%); /* Teal Accent Gradient */
-    background-size: 200% 200%; /* For gradient animation */
-    animation: gradientAnimation 10s ease infinite alternate; /* Apply gradient animation */
+    background: linear-gradient(135deg, #096f84 0%, #075f72 100%);
+    background-size: 200% 200%;
+    animation: gradientAnimation 10s ease infinite alternate;
 }
 .section-title {
-    font-size: 2.25rem; /* 36px */
+    font-size: 2.25rem;
     font-weight: 600;
-    margin-bottom: 1.5rem; /* 24px */
-    color: #096f84; /* Teal Accent */
+    margin-bottom: 1.5rem;
+    color: #096f84;
 }
 .nav-link {
     transition: color 0.3s ease;
 }
 .nav-link:hover {
-    color: #096f84; /* Teal Accent */
+    color: #096f84;
 }
 .cta-button {
-    background-color: #096f84; /* Teal Accent */
+    background-color: #096f84;
     color: white;
-    transition: background-color 0.3s ease, transform 0.2s ease; /* Add transform for scale */
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 .cta-button:hover {
-    background-color: #075f72; /* Darker Teal */
-    transform: scale(1.05); /* Slightly scale up on hover */
+    background-color: #075f72;
+    transform: scale(1.05);
 }
 .secondary-cta-button {
-    border-color: #096f84; /* Teal Accent */
-    color: #096f84; /* Teal Accent */
-    transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease; /* Add transform for scale */
+    border-color: #096f84;
+    color: #096f84;
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
 }
 .secondary-cta-button:hover {
-    background-color: #096f84; /* Teal Accent */
+    background-color: #096f84;
     color: white;
-    transform: scale(1.05); /* Slightly scale up on hover */
+    transform: scale(1.05);
 }
 .card {
     background-color: white;
-    border-radius: 0.75rem; /* 12px */
+    border-radius: 0.75rem;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    padding: 1.5rem; /* 24px */
-    transition: all 0.3s ease; /* For hover effects */
+    padding: 1.5rem;
+    transition: all 0.3s ease;
 }
 .card:hover {
-    transform: translateY(-5px) scale(1.01); /* Lift and slightly scale up */
-    box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.15), 0 5px 10px -5px rgba(0, 0, 0, 0.08); /* Stronger shadow */
+    transform: translateY(-5px) scale(1.01);
+    box-shadow: 0 15px 25px -5px rgba(0, 0, 0, 0.15), 0 5px 10px -5px rgba(0, 0, 0, 0.08);
 }
 .faq-item summary {
     cursor: pointer;
@@ -72,11 +72,11 @@ body {
 .chart-container {
     position: relative;
     width: 100%;
-    max-width: 400px; /* Max width for donut chart */
+    max-width: 400px;
     margin-left: auto;
     margin-right: auto;
-    height: 300px; /* Base height */
-    max-height: 350px; /* Max height */
+    height: 300px;
+    max-height: 350px;
 }
 @media (min-width: 768px) {
     .chart-container {
@@ -84,7 +84,7 @@ body {
         max-height: 400px;
     }
 }
-/* Custom scrollbar for a more modern look - optional */
+
 ::-webkit-scrollbar {
     width: 8px;
 }
@@ -93,14 +93,14 @@ body {
     border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb {
-    background: #096f84; /* Teal Accent */
+    background: #096f84;
     border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb:hover {
-    background: #075f72; /* Darker Teal */
+    background: #075f72;
 }
 
-/* Animations */
+
 @keyframes gradientAnimation {
     0% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
@@ -156,32 +156,32 @@ body {
 
 .animate-hero-text {
     animation: fadeInUp 0.8s ease-out forwards;
-    opacity: 0; /* Start hidden */
+    opacity: 0;
 }
 
 .animate-hero-buttons {
     animation: fadeInUp 0.8s ease-out forwards;
-    animation-delay: 0.3s; /* Delay for buttons */
-    opacity: 0; /* Start hidden */
+    animation-delay: 0.3s;
+    opacity: 0;
 }
 
 .animate-on-scroll {
     opacity: 0;
-    transition: opacity 0.8s ease-out; /* Only opacity transition by default */
+    transition: opacity 0.8s ease-out;
 }
 
 .animate-on-scroll.slide-in-left {
     transform: translateX(-50px);
-    transition: opacity 0.8s ease-out, transform 0.8s ease-out; /* Add transform transition for sliding elements */
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
 }
 
 .animate-on-scroll.slide-in-right {
     transform: translateX(50px);
-    transition: opacity 0.8s ease-out, transform 0.8s ease-out; /* Add transform transition for sliding elements */
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
 }
 
 .animate-on-scroll.pop-in {
-    transform: scale(0.8); /* Start smaller */
+    transform: scale(0.8);
     transition: opacity 0.8s ease-out, transform 0.8s ease-out;
 }
 
@@ -190,7 +190,7 @@ body {
     transform: translateX(0) scale(1);
 }
 
-/* Specific delays for staggered animations */
+
 .animate-delay-100 { animation-delay: 0.1s; }
 .animate-delay-200 { animation-delay: 0.2s; }
 .animate-delay-300 { animation-delay: 0.3s; }

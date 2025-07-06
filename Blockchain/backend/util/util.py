@@ -3,7 +3,7 @@ from Crypto.Hash import RIPEMD160
 from hashlib import sha256
 from math import log
 
-from Blockchain.backend.core.EllepticCurve.EllepticCurve import BASE58_ALPHABET
+from Blockchain.backend.core.EllipticCurve.EllipticCurve import BASE58_ALPHABET
 
 
 def hash256(s):

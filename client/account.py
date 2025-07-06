@@ -1,7 +1,6 @@
-import secrets
 import sys
 sys.path.append('/Users/Jonny/Downloads/KWH-OTH/KWH-OTH-Project')
-from Blockchain.backend.core.EllepticCurve.EllepticCurve import Sha256Point, BASE58_ALPHABET
+from Blockchain.backend.core.EllipticCurve.EllipticCurve import Sha256Point, BASE58_ALPHABET
 from Blockchain.backend.util.util import hash160, hash256
 from Blockchain.backend.core.database.database import AccountDB
 import secrets

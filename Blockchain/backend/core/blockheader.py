@@ -55,7 +55,7 @@ class BlockHeader:
             prev_block_hash=data['prev_block_hash'],
             merkle_root=data['merkle_root'],
             timestamp=data['timestamp'],
-            bits=data['bits'],  # Pass as string, __init__ will handle it
+            bits=data['bits'],
             nonce=data['nonce']
         )
 

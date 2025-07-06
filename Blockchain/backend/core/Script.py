@@ -1,5 +1,5 @@
 from Blockchain.backend.util.util import int_to_little_endian, encode_varint
-from Blockchain.backend.core.EllepticCurve.op import OP_CODE_FUNCTION # Note: Typo 'EllepticCurve' -> 'EllipticCurve'?
+from Blockchain.backend.core.EllipticCurve.op import OP_CODE_FUNCTION
 
 class Script:
     def __init__(self, cmds=None):
