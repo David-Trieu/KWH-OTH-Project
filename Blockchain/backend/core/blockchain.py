@@ -17,15 +17,12 @@ ZERO_HASH = '0' * 64
 VERSION = 1
 
 INITIAL_TARGET = 0x00000FFFF0000000000000000000000000000000000000000000000000000000
-PRICE_MAX = 300
 PRICE_MIN = 0
 
-EEG_UMLAGE_PRICE = 12.60
+EEG_EINSPEISE_VERGÜTUNG = 12.60 #ct
 
-MIN_TARGET_REDUCTION_FACTOR = 0.5
-MIN_ADJUSTED_TARGET = int(INITIAL_TARGET * MIN_TARGET_REDUCTION_FACTOR)
 
-SMALL_EASIER_FACTOR = 0.05
+SMALL_EASIER_FACTOR = 0.2
 SLIGHTLY_EASIER_TARGET = int(INITIAL_TARGET * (1 + SMALL_EASIER_FACTOR))
 
 def function1(manager_instance: Manager):
@@ -308,7 +305,7 @@ class Blockchain:
             average_price = sum(valid_prices) / len(valid_prices)
             print(
                 f"SMARD API: Durchschnittlicher Strompreis der verfügbaren gültigen Stunden: {average_price:.2f} EUR/MWh")
-            return average_price
+            return average_price/10 #weil es in EUR/MWh also /1000 für KWh und dann *100 für ct
 
         except requests.exceptions.RequestException as e:
             print(f"SMARD API Fehler bei der Anfrage (Netzwerk/HTTP): {e}")
@@ -333,30 +330,18 @@ class Blockchain:
             print("DEBUG: Konnte keinen Strompreis abrufen. Target bleibt unverändert.")
             return
 
-        clamped_price = max(PRICE_MIN, min(PRICE_MAX, electricity_price))
+        print(f"{electricity_price} ct pro KWh")
 
-        P1 = PRICE_MIN
-        P2 = EEG_UMLAGE_PRICE
-        P3 = PRICE_MAX
-
-        T1 = SLIGHTLY_EASIER_TARGET
-        T2 = INITIAL_TARGET
-        T3 = MIN_ADJUSTED_TARGET
-
-        if clamped_price <= EEG_UMLAGE_PRICE:
-            if (P2 - P1) == 0:
-                self.current_target = T2
+        if electricity_price <= EEG_EINSPEISE_VERGÜTUNG:
+            if electricity_price <= 0 or electricity_price == EEG_EINSPEISE_VERGÜTUNG:
+                self.current_target = INITIAL_TARGET
             else:
-                price_progress = (clamped_price - P1) / (P2 - P1)
-                self.current_target = int(T1 - (T1 - T2) * price_progress)
+                price_progress = electricity_price / EEG_EINSPEISE_VERGÜTUNG
+                self.current_target = int(SLIGHTLY_EASIER_TARGET - (SLIGHTLY_EASIER_TARGET - INITIAL_TARGET) * price_progress)
         else:
-            if (P3 - P2) == 0:
-                self.current_target = T2
-            else:
-                price_progress = (clamped_price - P2) / (P3 - P2)
-                self.current_target = int(T2 - (T2 - T3) * price_progress)
+            price_progress = (EEG_EINSPEISE_VERGÜTUNG/electricity_price)
+            self.current_target = int(INITIAL_TARGET * price_progress)
 
-        self.current_target = max(MIN_ADJUSTED_TARGET, min(SLIGHTLY_EASIER_TARGET, self.current_target))
 
         self.bits = target_to_bits(self.current_target)
         self.last_price_check_time = current_time
