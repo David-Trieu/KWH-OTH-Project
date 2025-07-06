@@ -1,5 +1,4 @@
 from FieldElement import FieldElement
-from Point import Point
 
 P = 2 ** 256 - 2 ** 32 - 977
 

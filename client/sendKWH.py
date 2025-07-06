@@ -1,10 +1,8 @@
-import time
 from Blockchain.backend.util.util import decode_base58
 from Blockchain.backend.core.Script import Script
 from Blockchain.backend.core.Tx import TxIn, TxOut, Tx
 from Blockchain.backend.core.database.database import AccountDB
-from Blockchain.backend.core.EllepticCurve.EllepticCurve import PrivateKey
-#from Blockchain.backend.core.blockchain import Blockchain
+from Blockchain.backend.core.EllipticCurve.EllipticCurve import PrivateKey
 
 
 class SendKWH:

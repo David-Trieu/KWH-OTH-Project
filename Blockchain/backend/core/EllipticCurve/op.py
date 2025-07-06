@@ -1,5 +1,5 @@
 from Blockchain.backend.util.util import hash160
-from Blockchain.backend.core.EllepticCurve.EllepticCurve import Sha256Point, Signature
+from Blockchain.backend.core.EllipticCurve.EllipticCurve import Sha256Point, Signature
 
 
 def op_dup(stack):

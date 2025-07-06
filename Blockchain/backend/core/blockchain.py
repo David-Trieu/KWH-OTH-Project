@@ -1,10 +1,7 @@
-import sys
 import time
 import requests
 import datetime
 from multiprocessing import Process, Manager
-
-sys.path.append('/Users/David/Desktop/KWH-OTH-Project')
 
 from Blockchain.backend.core.block import Block
 from Blockchain.backend.core.blockheader import BlockHeader

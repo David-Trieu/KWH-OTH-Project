@@ -1,5 +1,3 @@
-# W:\Energieinformatik\KWH-OTH-Project\Blockchain\frontend\run.py
-
 from flask import Flask, render_template, request, session, redirect, url_for
 import json
 
@@ -29,7 +27,6 @@ def signup():
     acct = account()
     acct.createKeys()
     try:
-        # Save the account details using AccountDB
         AccountDB().write([acct.__dict__])
         session['myAccount'] = acct.PublicAddress
         message = "Hier ist deine Wallet-Adresse. \n Bitte schreibe sie dir auf. \n" + acct.PublicAddress
@@ -72,9 +69,6 @@ def wallet():
         return render_template('login.html', message="Diese Adresse existiert nicht")
     transactionHistory, code = myacc.get_address_history(test)
 
-    print(json.dumps(transactionHistory.json, indent=4))
-    print(code)
-
     if code == 200:
         parsed_json_data = None
         if hasattr(transactionHistory, 'json') and transactionHistory.json is not None:
@@ -112,7 +106,6 @@ def wallet():
     balance = myacc.getBalance()
 
     if request.method == 'POST':
-        print("test")
         ToAddress = request.form.get('toAddress')
         Amount = request.form.get('Amount', type=int)
 
